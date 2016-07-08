@@ -1,7 +1,6 @@
 import logging
 import os
 
-import tinys3
 from flask import request, jsonify, send_from_directory, make_response
 from werkzeug.utils import secure_filename
 
@@ -10,8 +9,9 @@ from community_share.models.institution import Institution
 from community_share.authorization import get_requesting_user
 from community_share import mail_actions
 from community_share.routes import base_routes
-from community_share import config, store
+from community_share import store
 from community_share.models.base import ValidationException
+from community_share.picture_utils import image_to_user_filename, is_allowable_image, store_image
 
 logger = logging.getLogger(__name__)
 
@@ -174,19 +174,6 @@ def register_user_routes(app):
 
 
 
-    ALLOWED_EXTENSIONS = set(['.txt', '.pdf', '.png', '.jpg', '.jpeg', '.gif'])
-
-    def process_filename(filename, user_id):
-        base, extension = os.path.splitext(filename)
-        if extension.lower() in ALLOWED_EXTENSIONS:
-            # Maximum filename length = 100
-            # Use 50 to be safe
-            base = base[:50]
-            processed = 'user_{0}_{1}{2}'.format(user_id, base, extension)
-        else:
-            processed = None
-        return processed
-
     @app.route('/api/usersearch', methods=['GET'])
     def search():
         requester = get_requesting_user()
@@ -199,29 +186,30 @@ def register_user_routes(app):
 
     @app.route('/api/user/<int:user_id>/picture', methods=['PUT', 'POST', 'PATCH'])
     def post_picture(user_id):
-        requester = get_requesting_user()
-        if (user_id == requester.id):
-            user = requester
-            f = request.files['file']
-            if f:
-                filename = process_filename(f.filename, user_id)
-                if filename is None:
-                    response = base_routes.make_bad_request_response()
-                else:
-                    conn = tinys3.Connection(
-                        config.S3_USERNAME, config.S3_KEY, tls=True)
-                    # Upload it.  Set cache expiry time to 1 hr.
-                    conn.upload(filename, f, config.S3_BUCKETNAME,
-                                expires=3600)
-                    user.picture_filename = filename
-                    store.session.add(user)
-                    store.session.commit()
-                    response = base_routes.make_OK_response()
-            else:
-                response = base_routes.make_bad_request_response()
-        else:
-            response = base.routes.make_forbidden_response()
-        return response
+        user = get_requesting_user()
+
+        if user_id is not user.id:
+            return base_routes.make_not_authorized_response()
+
+        image_file = request.files['file']
+        if not image_file:
+            return base_routes.make_bad_request_response('missing image data')
+
+        image_data = image_file.read()
+        if not is_allowable_image(image_data):
+            return base_routes.make_bad_request_response('unallowed image type')
+
+        filename = image_to_user_filename(image_data, user_id)
+
+        store_image(image_file, filename)
+
+        user.picture_filename = filename
+        store.session.add(user)
+        store.session.commit()
+
+        logger.info('Saving image {!r}'.format(filename))
+
+        return base_routes.make_OK_response()
 
     @app.route('/api/activate_email', methods=['POST'])
     def activate_email():
