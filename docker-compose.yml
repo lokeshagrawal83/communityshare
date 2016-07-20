@@ -18,8 +18,9 @@ services:
     command: /communityshare/start_dev.sh
     ports:
       - "5000:5000"
+      - "5002:5001"
     networks:
-      - app
+      app:
     volumes:
       - .:/communityshare
     privileged: true

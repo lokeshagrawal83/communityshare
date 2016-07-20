@@ -33,6 +33,8 @@ docker-compose up
 npm start
 ```
 
+> Debugging on OS X - use `socat -d -d TCP-L:8099,fork UNIX:/var/run/docker.sock`
+
 After this you should be able to see the servers initialize. You should be able to open up a browser to [http://localhost:5000](http://localhost:5000) and see the CommunityShare site.
 
 If you experience any issues getting CommunityShare running locally, please [file an issue](https://github.com/communityshare/communityshare/issues/new) and describe the problems you encountered.
