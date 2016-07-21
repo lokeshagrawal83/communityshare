@@ -1,20 +1,30 @@
-db:
-  image: postgres:9.5
-  ports:
-    - "5432:5432"
-  volumes:
-    - ./init_database.sql:/docker-entrypoint-initdb.d/init_database.sql
-  environment:
-      POSTGRES_USER: communityshare
-      POSTGRES_PASSWORD: communityshare
+version: '2'
 
-server:
-  build: .
-  working_dir: /communityshare
-  ports:
-    - "5000:5000"
-  volumes:
-    - .:/communityshare
-  links:
-    - "db:postgres"
-  privileged: true
+services:
+  db:
+    image: postgres:9.5
+    ports:
+      - "5432:5432"
+    networks:
+      app:
+        aliases:
+          - postgres
+    volumes:
+      - ./init_database.sql:/docker-entrypoint-initdb.d/init_database.sql
+    environment:
+        POSTGRES_USER: communityshare
+        POSTGRES_PASSWORD: communityshare
+
+  server:
+    build: .
+    working_dir: /communityshare
+    ports:
+      - "5000:5000"
+    networks:
+      - app
+    volumes:
+      - .:/communityshare
+    privileged: true
+
+networks:
+  app:
