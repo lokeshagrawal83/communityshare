@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask import Flask, send_from_directory, render_template
+from flask_webpack import Webpack
 
 from community_share import config, store, flask_sslify
 from community_share.routes.user_routes import register_user_routes
@@ -16,8 +17,15 @@ logger = logging.getLogger(__name__)
 
 def make_app():
     logger.debug('COMMIT_HASH is {0}'.format(config.COMMIT_HASH))
+
+    webpack = Webpack()
     app = Flask(__name__, template_folder='static/')
+
     app.config['SQLALCHEMY_DATABASE_URI'] = config.DB_CONNECTION
+    app.config['WEBPACK_MANIFEST_PATH'] = '../static/manifest.json'
+
+    webpack.init_app(app)
+
     if config.SSL != 'NO_SSL':
         flask_sslify.SSLify(app)
     register_user_routes(app)

@@ -56,7 +56,7 @@
     <script src="./static/js/lib/jquery-1.11.1.min.js"></script>
     <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>-->
 
-    <script src="./static/js/bundle.js?q={{COMMIT_HASH}}"></script>
+    {{ javascript_tag( 'bundle' ) | safe }}
 
     <!--[if lt IE 9]>
       <script src="./static/js/lib/angular-shims-placeholder.min.js"></script>

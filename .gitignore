@@ -13,6 +13,9 @@ pip-delete-this-directory.txt
 instance/
 .webassets-cache
 
+static/build
+manifest.json
+
 \#*
 \.\#*
 *__pycache__*

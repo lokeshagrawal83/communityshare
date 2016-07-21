@@ -1,9 +1,10 @@
-var webpack = require('webpack');
+var path = require( 'path' );
+var webpack = require( 'webpack' );
+var ManifestPlugin = require( 'manifest-revision-webpack-plugin' );
 
 module.exports = {
-    context: __dirname + '/static/js',
     entry: {
-        bundle: './index.js'
+        bundle: path.join( __dirname, 'static', 'js', 'index.js' )
     },
     externals: [ {
         angular: true
@@ -11,15 +12,22 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /.js$/,
+                test: /\.js$/,
                 exclude: /node_modules/,
-                loaders: ['ng-annotate']
-            },
+                loaders: [ 'ng-annotate' ]
+            }
         ]
     },
+    plugins: [
+        new ManifestPlugin( 'manifest.json', {
+            rootAssetPath: './static/build/',
+            ignorePaths: [ /\.map$/ ],
+            extensionsRegex: /\.js$/
+        } )
+    ],
     output: {
-        path: __dirname + '/static/js',
-        filename: '[name].js'
+        path: path.join( __dirname, 'static', 'build' ),
+        filename: '[name].[hash].js'
     },
     devtool: 'source-map'
 };
