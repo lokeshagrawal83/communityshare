@@ -10,9 +10,9 @@ def init():
 
 
 def first_available_debugger():
-    for nextDebugger in [pycharm]:
-        if nextDebugger.can_connect():
-            return nextDebugger
+    for next_debugger in [pycharm]:
+        if next_debugger.can_connect():
+            return next_debugger
 
     return None
 
