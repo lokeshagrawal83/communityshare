@@ -4,6 +4,7 @@ import sys
 import time
 
 from community_share import config, app
+from local_debug import can_connect_to_debugger, inject_debugger
 
 
 def wait_for_manifest(path):
@@ -23,23 +24,11 @@ def wait_for_manifest(path):
 
 logger = logging.getLogger(__name__)
 
-import socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-result = sock.connect_ex(('192.168.65.1', 5001))
-sock.close()
-if result == 0:
-    logger.info('Connecting to remote PyCharm debugger')
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'pycharm-debug-py3k.egg'))
-
-    import pydevd
-    pydevd.settrace(
-        '192.168.65.1',
-        port=5001,
-        stdoutToServer=True,
-        stderrToServer=True,
-    )
+if can_connect_to_debugger():
+    logger.info('Connecting to debugger')
+    inject_debugger()
 else:
-    logger.info('Could not find a debugger to connect to')
+    logger.info('Could not find any debugger')
 
 logger.info('Loading settings from environment')
 config.load_config('./config.dev.json')
