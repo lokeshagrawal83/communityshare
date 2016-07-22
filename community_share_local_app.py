@@ -4,7 +4,7 @@ import sys
 import time
 
 from community_share import config, app
-from local_debug import can_connect_to_debugger, inject_debugger
+from debugger import can_connect_to_debugger, inject_debugger
 
 
 def wait_for_manifest(path):

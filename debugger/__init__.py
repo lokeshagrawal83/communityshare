@@ -1,4 +1,4 @@
-import local_debug.pycharm
+import debugger.pycharm
 
 
 def first_available_debugger():
