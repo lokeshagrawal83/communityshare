@@ -20,7 +20,7 @@ services:
       - "5000:5000"
       - "5002:5001"
     networks:
-      app:
+      - app
     volumes:
       - .:/communityshare
     privileged: true
