@@ -20,7 +20,7 @@ def inject_debugger():
     import pydevd
 
     pydevd.settrace(
-        PYDEVD_IP,
+        host=PYDEVD_IP,
         port=PYDEVD_PORT,
         stdoutToServer=True,
         stderrToServer=True
