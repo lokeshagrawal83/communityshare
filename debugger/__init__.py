@@ -1,5 +1,12 @@
-import debugger.pycharm
+import os
 
+import debugger.pycharm
+import debugger.eclipse
+
+# imported by the pydevd module to setup path-mapping in Eclipse
+local_path = os.getenv('LOCAL_CODE_PATH', os.curdir)
+
+configured_debuggers = [ eclipse, pycharm ]
 last_connectible_debugger = None
 
 
@@ -10,7 +17,7 @@ def init():
 
 
 def first_available_debugger():
-    for next_debugger in [pycharm]:
+    for next_debugger in configured_debuggers:
         if next_debugger.can_connect():
             return next_debugger
 

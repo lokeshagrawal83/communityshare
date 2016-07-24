@@ -16,11 +16,11 @@ def can_connect():
 
 
 def inject_debugger():
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'pycharm-debug-py3k.egg'))
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'pydev-custom-eclipse.egg'))
     import pydevd
 
     pydevd.settrace(
-        PYDEVD_IP,
+        host=PYDEVD_IP,
         port=PYDEVD_PORT,
         stdoutToServer=True,
         stderrToServer=True

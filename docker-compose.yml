@@ -18,12 +18,13 @@ services:
     command: /communityshare/start_dev.sh
     ports:
       - "5000:5000"
-      - "5002:5001"
     networks:
       - app
     volumes:
       - .:/communityshare
     privileged: true
+    environment:
+      - LOCAL_CODE_PATH=$PWD
 
   webpack:
     image: dmsnell/communityshare:5.0
