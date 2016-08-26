@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import sys
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -20,6 +21,8 @@ def setup_logging(level, location):
     if not os.path.exists(logging_fn):
         open(logging_fn, 'a').close()
     ch = logging.FileHandler(logging_fn)
+    if location == "STDOUT":
+        ch = logging.StreamHandler(stream=sys.stdout)
     ch.setLevel(level)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     ch.setFormatter(formatter)

@@ -5,7 +5,7 @@
 "BASEURL":                  "http://0.0.0.0:5000",
 "BUG_EMAIL_ADDRESS":        "tech@example.com",
 "DONOTREPLY_EMAIL_ADDRESS": "CommunityShare <support@example.com>",
-"ENCRYPTION_KEY":           "AAAAA",
+"ENCRYPTION_KEY":           "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF",
 "LOGGING_LEVEL":            "DEBUG",
 "MAILER_TYPE":              "DUMMY",
 "NOTIFY_EMAIL_ADDRESS":     "notify@example.com",
