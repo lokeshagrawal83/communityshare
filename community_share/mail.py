@@ -102,7 +102,7 @@ class DummyMailer(object):
 class MailgunMailer(object):
     def send(email):
         error_message = ''
-        if not (email.endswith('@example.com')):
+        if not (email.to_address.endswith('@example.com')):
             payload = {
                 'from': email.from_address,
                 'to': email.to_address,
