@@ -1,0 +1,15 @@
+{
+  "APP_ENV": "production",
+  "COMMIT_HASH": "af2f765d57bbc6bb644c04218fabccf4cd7e44a4",
+  "BASEURL": "http://app.communityshare.us",
+  "BUG_EMAIL_ADDRESS": "tech@mail.app.communityshare.us",
+  "DONOTREPLY_EMAIL_ADDRESS": "CommunityShare <support@mail.app.communityshare.us>",
+  "LOGGING_LEVEL": "INFO",
+  "MAILER_TYPE": "MAILGUN",
+  "SUPPORT_EMAIL_ADDRESS": "support@mail.app.communityshare.us",
+  "UPLOAD_LOCATION": "https://communityshare.s3.amazonaws.com/",
+  "LOGGING_LOCATION": "STDOUT",
+  "MAILGUN_DOMAIN": "mail.app.communityshare.us",
+  "SSL": "FORCE_SSL"
+}
+   

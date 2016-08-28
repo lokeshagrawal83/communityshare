@@ -1,0 +1,23 @@
+{
+  "APP_ENV": "development",
+  "COMMIT_HASH": "blah",
+  "ABUSE_EMAIL_ADDRESS": "support@example.com",
+  "ADMIN_EMAIL_ADDRESSES": "another-admin@example.com",
+  "BASEURL": "http://0.0.0.0:5000",
+  "BUG_EMAIL_ADDRESS": "tech@example.com",
+  "DONOTREPLY_EMAIL_ADDRESS": "CommunityShare <support@example.com>",
+  "ENCRYPTION_KEY": "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF",
+  "LOGGING_LEVEL": "DEBUG",
+  "MAILER_TYPE": "DUMMY",
+  "NOTIFY_EMAIL_ADDRESS": "notify@example.com",
+  "S3_BUCKETNAME": "communityshare",
+  "S3_KEY": "dummy",
+  "S3_USERNAME": "dummy",
+  "SUPPORT_EMAIL_ADDRESS": "support@example.com",
+  "UPLOAD_LOCATION": "",
+  "DB_CONNECTION": "postgres://communityshare:communityshare@postgres:5432/communityshare",
+  "MAILGUN_API_KEY": "DUMMY",
+  "MAILGUN_DOMAIN": "DUMMY",
+  "LOGGING_LOCATION": "/communitysharelogs",
+  "SSL": "NO_SSL"
+}

@@ -6,7 +6,7 @@ from community_share import config, app
 logger = logging.getLogger(__name__)
 
 logger.info('Loading settings from environment')
-config.load_from_file()
+config.load_config('./config.dev.json')
 
 if 'production' == config.APP_ENV:
     sys.exit('Cannot run development app with production config')

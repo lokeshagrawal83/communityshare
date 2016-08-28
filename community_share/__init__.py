@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
+from community_share.config import load_app_config
 from community_share.crypt import CryptHelper
 
 Base = declarative_base()
@@ -63,7 +64,7 @@ store = Store()
 
 
 class Config(object):
-    NAMES = (
+    NAMES = {
         'APP_ENV',  # 'development' or 'production'
         # Database
         'DB_CONNECTION',
@@ -82,64 +83,28 @@ class Config(object):
         # Cryptography
         'ENCRYPTION_KEY',
         # SSL
-        'SSL',
-    )
-    def load_from_dict(self, d):
-        if set(d.keys()) != set(self.NAMES):
-            error = 'Missing keys are {0} and extra keys are {1}'.format(
-                set(self.NAMES) - set(d.keys()),
-                set(d.keys()) - set(self.NAMES))
-            raise ValueError("Bad config. : " + error)
-        for key, value in d.items():
+        'SSL'
+    }
+
+    def load_config(self, filename):
+        data = load_app_config(self.NAMES, filename)
+
+        if set(data.keys()) != self.NAMES:
+            missing_keys = self.NAMES - set(data.keys())
+            invalid_keys = set(data.keys()) - self.NAMES
+
+            sys.exit(
+                'Invalid configuration found:\n\tmissing keys: {}\n\tinvalid keys: {}'
+                .format(missing_keys, invalid_keys)
+            )
+
+        for key, value in data.items():
             setattr(self, key, value)
+
         setup_logging(self.LOGGING_LEVEL, self.LOGGING_LOCATION)
         logger.info('Setup logging with level {0}'.format(self.LOGGING_LEVEL))
         store.set_config(self)
         self.crypt_helper = CryptHelper(config.ENCRYPTION_KEY)
 
-    def load_from_environment(self):
-        data = {
-            'APP_ENV': os.environ['APP_ENV'],
-            'DB_CONNECTION': os.environ['DATABASE_URL'],
-            'MAILER_TYPE': os.environ['COMMUNITYSHARE_MAILER_TYPE'],
-            'MAILGUN_API_KEY': os.environ['MAILGUN_API_KEY'],
-            'MAILGUN_DOMAIN': os.environ['MAILGUN_DOMAIN'],
-            'LOGGING_LEVEL': os.environ['COMMUNITYSHARE_LOGGING_LEVEL'],
-            'DONOTREPLY_EMAIL_ADDRESS': os.environ['COMMUNITYSHARE_DONOTREPLY_EMAIL_ADDRESS'],
-            'SUPPORT_EMAIL_ADDRESS': os.environ['COMMUNITYSHARE_SUPPORT_EMAIL_ADDRESS'],
-            'BUG_EMAIL_ADDRESS': os.environ['COMMUNITYSHARE_BUG_EMAIL_ADDRESS'],
-            'ABUSE_EMAIL_ADDRESS': os.environ['COMMUNITYSHARE_ABUSE_EMAIL_ADDRESS'],
-            'ADMIN_EMAIL_ADDRESSES': os.environ['COMMUNITYSHARE_ADMIN_EMAIL_ADDRESSES'],
-            'NOTIFY_EMAIL_ADDRESS': os.environ['COMMUNITYSHARE_NOTIFY_EMAIL_ADDRESS'],
-            'BASEURL': os.environ['COMMUNITYSHARE_BASEURL'],
-            'S3_BUCKETNAME': os.environ['COMMUNITYSHARE_S3_BUCKETNAME'],
-            'S3_KEY': os.environ['COMMUNITYSHARE_S3_KEY'],
-            'S3_USERNAME': os.environ['COMMUNITYSHARE_S3_USERNAME'],
-            'UPLOAD_LOCATION': os.environ['COMMUNITYSHARE_UPLOAD_LOCATION'],
-            'COMMIT_HASH': os.environ['COMMIT_HASH'],
-            'ENCRYPTION_KEY': os.environ['COMMUNITYSHARE_ENCRYPTION_KEY'],
-            'SSL': os.environ.get('COMMUNITYSHARE_SSL', 'FORCE_SSL'),
-        }
-        self.load_from_dict(data)
-
-    def config_filename(self):
-        directory = os.path.dirname(os.path.realpath(__file__))
-        fn = os.path.join(directory, '..', 'config.json')
-        return fn
-        
-    def load_from_file(self):
-        fn = self.config_filename()
-        with open(fn, 'r') as f:
-            config_data = json.load(f)
-            self.load_from_dict(config_data)
-
-    def write_file(self):
-        d = {}
-        for name in self.NAMES:
-            d[name] = getattr(self, name)
-        fn = self.config_filename()
-        with open(fn, 'w') as f:
-            json.dump(d, f, sort_keys=True, indent=4, separators=(',', ': '))
-            
 
 config = Config()
