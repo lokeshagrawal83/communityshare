@@ -64,6 +64,7 @@ store = Store()
 
 class Config(object):
     NAMES = (
+        'APP_ENV',  # 'development' or 'production'
         # Database
         'DB_CONNECTION',
         # Email 
@@ -98,6 +99,7 @@ class Config(object):
 
     def load_from_environment(self):
         data = {
+            'APP_ENV': os.environ['APP_ENV'],
             'DB_CONNECTION': os.environ['DATABASE_URL'],
             'MAILER_TYPE': os.environ['COMMUNITYSHARE_MAILER_TYPE'],
             'MAILGUN_API_KEY': os.environ['MAILGUN_API_KEY'],
