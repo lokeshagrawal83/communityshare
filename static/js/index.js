@@ -3,3 +3,5 @@
 require( './controllers/index.js' );
 require( './services/index.js' );
 require( './directives/index.js' );
+require( './main.js' );
+
