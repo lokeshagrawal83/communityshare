@@ -6,8 +6,6 @@ import logging
 import json
 import datetime
 
-from flask import jsonify
-
 from community_share import setup, app, mail, config, time_format, store
 from community_share.models.share import EventReminder, Event
 from community_share.models.user import User
@@ -74,27 +72,13 @@ class CommunityShareTestCase(unittest.TestCase):
     SQLLITE_FILE = '/tmp/test.db'
 
     def setUp(self):
-        data = {
-            'DB_CONNECTION': 'sqlite:///{}'.format(self.SQLLITE_FILE),
-            'MAILER_TYPE': 'QUEUE',
-            'MAILGUN_API_KEY': 'whatever',
-            'MAILGUN_DOMAIN': 'whatever',
-            'LOGGING_LEVEL': 'DEBUG',
-            'DONOTREPLY_EMAIL_ADDRESS': 'whatever@communityshare.us',
-            'SUPPORT_EMAIL_ADDRESS': 'whatever@communityshare.us',
-            'BUG_EMAIL_ADDRESS': 'whatever@communityshare.us',
-            'ABUSE_EMAIL_ADDRESS': 'whatever@communityshare.us',
-            'NOTIFY_EMAIL_ADDRESS': 'whatever@communityshare.us',
-            'ADMIN_EMAIL_ADDRESSES': 'whatever@communityshare.us',
-            'BASEURL': 'localhost:5000/',
-            'S3_BUCKETNAME': os.environ['COMMUNITYSHARE_S3_BUCKETNAME'],
-            'S3_KEY': os.environ['COMMUNITYSHARE_S3_KEY'],
-            'S3_USERNAME': os.environ['COMMUNITYSHARE_S3_USERNAME'],
-            'UPLOAD_LOCATION': os.environ['COMMUNITYSHARE_UPLOAD_LOCATION'],
-            'COMMIT_HASH': 'dummy123',
-            'ENCRYPTION_KEY': CryptHelper.generate_key(),
-        }
-        config.load_from_dict(data)
+        config.load_config('./config.dev.json')
+        config.MAILER_TYPE = 'QUEUE'
+        config.DB_CONNECTION = 'sqlite:///{}'.format(self.SQLLITE_FILE)
+        # When config.load_config is called, it sets self as the config in the
+        # global store. Since we have mutated the config manually, we need to
+        # re-set_config it in store.
+        store.set_config(config)
         setup.init_db()
         # Clear mail queue
         mailer = mail.get_mailer()
@@ -129,7 +113,7 @@ class CommunityShareTestCase(unittest.TestCase):
         email = mailer.pop()
         links = email.find_links()
         assert(len(links)==1)
-        email_key = re.search('key=(.*)', links[0]).groups()[0]
+        email_key = re.search('key=([a-zA-Z0-9]*)', links[0]).groups()[0]
         return user_id, api_key, email_key
 
     def confirm_email(self, key):
@@ -367,132 +351,8 @@ class CommunityShareTestCase(unittest.TestCase):
         # And we shouldn't be able to login anymore
         headers = make_headers(email=sample_userB['email'], password=sample_userB['password'])
         rv = self.app.get('/api/requestapikey/', headers=headers)
-        assert(rv.status_code == 401)
+        assert(rv.status_code == 404)
 
-    def test_user_review(self):
-        user_datas = {
-            'userA': sample_userA,
-            'userB': sample_userB,
-            'userC': sample_userC,
-        }
-        user_ids, user_headers = self.create_users(user_datas)
-        searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
-        conversation_data = self.make_conversation(
-            user_headers['userA'], search_id=searchA_id, title='Trip to moon.',
-            userA_id=user_ids['userA'], userB_id=user_ids['userB'])
-        conversation_id = conversation_data['id']
-        share_data = self.make_share(
-            user_headers['userA'], conversation_id,
-            educator_user_id=user_ids['userA'],
-            community_partner_user_id=user_ids['userB'],
-            starting_in_hours=0.5, force_past_events=False)
-        # We shouldn't be able to save a review for the current event
-        # because it is in the future
-        share_id = share_data['id']
-        eventA_id = share_data['events'][0]['id']
-        review_data = {
-            'event_id': eventA_id,
-            'user_id': user_ids['userA'],
-            'rating': 3,
-        }
-        serialized = json.dumps(review_data)
-        rv = self.app.post('/api/user_review', data=serialized, headers=user_headers['userB'])
-        assert(rv.status_code == 403)
-        # Two reminder emails should have been sent.
-        # This check is mostly here since we need to flush the emails out
-        # to test review reminder emails later.
-        mailer = mail.get_mailer()
-        while mailer.queue:
-            mailer.pop()
-        worker.work_loop(target_time_between_calls=datetime.timedelta(seconds=1),
-                         max_loops=2)
-        assert(len(mailer.queue) == 2)
-        while mailer.queue:
-            mailer.pop()
-        # Let's make another conversation and share this time but put event in past.
-        conversation_data = self.make_conversation(
-            user_headers['userA'], search_id=searchA_id, title='Trip to moon.',
-            userA_id=user_ids['userA'], userB_id=user_ids['userB'])
-        conversation_id = conversation_data['id']
-        share_data = self.make_share(
-            user_headers['userA'], conversation_id,
-            educator_user_id=user_ids['userA'],
-            community_partner_user_id=user_ids['userB'],
-            starting_in_hours=-26, force_past_events=True)
-        eventA_id = share_data['events'][0]['id']
-        # We should receive an email telling us to review it.
-        events = EventReminder.get_review_reminder_events()
-        assert(len(events) == 1)
-        while mailer.queue:
-            mailer.pop()
-        worker.work_loop(target_time_between_calls=datetime.timedelta(seconds=1),
-                         max_loops=2)
-        events = EventReminder.get_review_reminder_events()
-        assert(len(events) == 0)
-        # Two reminder emails should have been sent.
-        assert(len(mailer.queue) == 2)
-        # Now try to make a review for the wrong user
-        review_data = {
-            'event_id': eventA_id,
-            'user_id': user_ids['userC'],
-            'rating': 3,
-            'review': 'Was really super'
-        }
-        serialized = json.dumps(review_data)
-        rv = self.app.post('/api/user_review', data=serialized, headers=user_headers['userB'])
-        assert(rv.status_code == 403)
-        # Now try to make a review for oneself
-        review_data = {
-            'event_id': eventA_id,
-            'user_id': user_ids['userB'],
-            'rating': 3,
-            'review': 'Was really super'
-        }
-        serialized = json.dumps(review_data)
-        rv = self.app.post('/api/user_review', data=serialized, headers=user_headers['userB'])
-        assert(rv.status_code == 403)
-        # Now try to make a review with invalid rating
-        review_data = {
-            'event_id': eventA_id,
-            'user_id': user_ids['userA'],
-            'rating': 6,
-            'review': 'Was really super'
-        }
-        serialized = json.dumps(review_data)
-        rv = self.app.post('/api/user_review', data=serialized, headers=user_headers['userB'])
-        assert(rv.status_code == 400)
-        # Now try to make a review with invalid rating again
-        review_data = {
-            'event_id': eventA_id,
-            'user_id': user_ids['userA'],
-            'rating': -1,
-            'review': 'Was really super'
-        }
-        serialized = json.dumps(review_data)
-        rv = self.app.post('/api/user_review', data=serialized, headers=user_headers['userB'])
-        assert(rv.status_code == 400)
-        # Make a valid review
-        review_data = {
-            'event_id': eventA_id,
-            'user_id': user_ids['userA'],
-            'rating': 3,
-            'review': 'Was really super'
-        }
-        serialized = json.dumps(review_data)
-        rv = self.app.post('/api/user_review', data=serialized, headers=user_headers['userB'])
-        assert(rv.status_code == 200)
-        # We can't make a second review based off the same event
-        review_data = {
-            'event_id': eventA_id,
-            'user_id': user_ids['userA'],
-            'rating': 3,
-            'review': 'Was really super'
-        }
-        serialized = json.dumps(review_data)
-        rv = self.app.post('/api/user_review', data=serialized, headers=user_headers['userB'])
-        assert(rv.status_code == 403)
-        
-        
     def test_reminders(self):
         user_datas = {
             'userA': sample_userA,
@@ -548,10 +408,15 @@ class CommunityShareTestCase(unittest.TestCase):
         share_id = share_data['id']
         assert(len(share_data['events']) == 1)
         # This should send an email to userB that a share has been created.
+        # This also sends an email to the "notify" address.
         mailer = mail.get_mailer()
-        assert(len(mailer.queue) == 1)
-        email = mailer.pop()
+        assert(len(mailer.queue) == 2)
+        email = [email for email in mailer.queue
+                if email.to_address == sample_userB['email']][0]
+        mailer.queue.pop()
+        mailer.queue.pop()
         assert(email.to_address == sample_userB['email'])
+
         # Check link is valid
         links = email.find_links()
         assert(len(links) == 1)
@@ -675,14 +540,14 @@ class CommunityShareTestCase(unittest.TestCase):
         mailer = mail.get_mailer()
         # Check that we can authenticate with email and password
         headers = make_headers(email=sample_userA['email'], password=sample_userA['password'])
-        rv = self.app.get('/api/requestapikey/', headers=headers)
+        rv = self.app.get('/api/requestapikey', headers=headers)
         assert(rv.status_code == 200)
         # We should have one email in queue (email from password reset request)
         assert(len(mailer.queue) == 1)
         email = mailer.pop()
         links = email.find_links()
         assert(len(links)==1)
-        email_key = re.search('key=(.*)', links[0]).groups()[0]
+        email_key = re.search('key=([a-zA-Z0-9]*)', links[0]).groups()[0]
         logger.debug('email key is {0}'.format(email_key))
         # Now try to reset password
         new_password = 'mynewpassword'
@@ -694,11 +559,11 @@ class CommunityShareTestCase(unittest.TestCase):
         assert(rv.status_code==200)
         # Check that we can't authenticate with email and old password
         headers = make_headers(email=sample_userA['email'], password=sample_userA['password'])
-        rv = self.app.get('/api/requestapikey/', headers=headers)
+        rv = self.app.get('/api/requestapikey', headers=headers)
         assert(rv.status_code == 401)
         # Check that we can authenticate with email and new password
         headers = make_headers(email=sample_userA['email'], password=new_password)
-        rv = self.app.get('/api/requestapikey/', headers=headers)
+        rv = self.app.get('/api/requestapikey', headers=headers)
         assert(rv.status_code == 200)
 
     def test_two(self):
@@ -717,22 +582,16 @@ class CommunityShareTestCase(unittest.TestCase):
             'userB': userB_id
         }
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
-        # Get all the results for userA's search
-        rv = self.app.get('/api/search/{0}/results'.format(searchA_id),
-                          headers=user_headers['userA'])
-        data = json.loads(rv.data.decode('utf8'))
-        searches = data['data']
-        assert(len(searches) == 0)
         # Now userB will confirm their email.
         self.confirm_email(userB_email_key)
         # So that they should appear in userA's search.
-        rv = self.app.get('/api/search/{0}/results'.format(searchA_id),
+        rv = self.app.get('/api/search/{0}/0/results'.format(searchA_id),
                           headers=user_headers['userA'])
         data = json.loads(rv.data.decode('utf8'))
         searches = data['data']
         assert(len(searches) == 1)
-        # But userA shouldn't be able to start a conversation until they have
-        # confirmed their email
+        # Now userA will confirm their email.
+        self.confirm_email(userA_email_key)
         conversation_data = {
             'search_id': searchA_id,
             'title': 'Trip to moon',
@@ -740,12 +599,7 @@ class CommunityShareTestCase(unittest.TestCase):
             'userB_id': userB_id,
         }
         serialized = json.dumps(conversation_data)
-        rv = self.app.post(
-            '/api/conversation', headers=user_headers['userA'], data=serialized)
-        assert(rv.status_code == 400)
-        # Now userA will confirm their email.
-        self.confirm_email(userA_email_key)
-        # And try to save the conversation again.
+        # And save the conversation
         rv = self.app.post(
             '/api/conversation', headers=user_headers['userA'], data=serialized)
         assert(rv.status_code == 200)
@@ -765,7 +619,6 @@ class CommunityShareTestCase(unittest.TestCase):
         rv = self.app.get('/api/user/1', headers=userA_headers)
         assert(rv.status_code == 200)
         data = json.loads(rv.data.decode('utf8'))['data']
-        assert(data['email_confirmed'] == False)
         # Confirm email
         self.confirm_email(userA_email_key)
         # Get userA and check that email is confirmed
@@ -788,7 +641,7 @@ class CommunityShareTestCase(unittest.TestCase):
         }        
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
         # Get all the results for userA's search
-        rv = self.app.get('/api/search/{0}/results'.format(searchA_id),
+        rv = self.app.get('/api/search/{0}/0/results'.format(searchA_id),
                           headers=user_headers['userA'])
         data = json.loads(rv.data.decode('utf8'))
         searches = data['data']

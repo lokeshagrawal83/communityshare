@@ -15,7 +15,7 @@
   "S3_USERNAME": "dummy",
   "SUPPORT_EMAIL_ADDRESS": "support@example.com",
   "UPLOAD_LOCATION": "",
-  "DB_CONNECTION": "postgres://communityshare:communityshare@postgres:5432/communityshare",
+  "DB_CONNECTION": "postgresql://communityshare:communityshare@postgres:5432/communityshare",
   "MAILGUN_API_KEY": "DUMMY",
   "MAILGUN_DOMAIN": "DUMMY",
   "LOGGING_LOCATION": "/communitysharelogs",

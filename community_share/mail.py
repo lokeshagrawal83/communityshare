@@ -80,7 +80,7 @@ class Email(object):
 
     def find_links(self):
         links = []
-        pattern = '\s+({}.*)\s*'.format(config.BASEURL)
+        pattern = '[ >]({}.*)\s*'.format(config.BASEURL)
         match = re.search(pattern, self.content)
         if match:
             links = match.groups()

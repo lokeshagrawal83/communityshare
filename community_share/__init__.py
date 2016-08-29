@@ -31,7 +31,6 @@ def setup_logging(level, location):
     packages = ('__main__', 'community_share',)
     for package in packages:
         logger = logging.getLogger(package)
-        logger.handlers = []
         logger.addHandler(ch)
         logger.setLevel(level)
     # Warning only packages
