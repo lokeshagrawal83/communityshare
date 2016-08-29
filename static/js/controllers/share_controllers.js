@@ -11,7 +11,7 @@ var module = angular.module(
 
 module.controller(
 'SharesController',
-function(Session, $scope, Share, startConversation) {
+['Session', '$scope', 'Share', 'startConversation', function(Session, $scope, Share, startConversation) {
   $scope.Session = Session;
   $scope.startConversation = startConversation;
   if ($scope.Session.activeUser) {
@@ -31,11 +31,11 @@ function(Session, $scope, Share, startConversation) {
         $scope.errorMessage = errorMessage;
       });
   }
-});
+}]);
 
 module.controller(
 'ShareController',
-function(Session, $scope, $routeParams, Share) {
+['Session', '$scope', '$routeParams', 'Share', function(Session, $scope, $routeParams, Share) {
   $scope.Session = Session;
   var shareId = $routeParams.shareId;
   if (shareId !== undefined) {
@@ -52,12 +52,12 @@ function(Session, $scope, $routeParams, Share) {
         $scope.errorMessage = msg;
       });
   }
-});
+}]);
 
 
 module.controller(
 'EditShareController',
-function($scope, share, $modalInstance) {
+['$scope', 'share', '$modalInstance', function($scope, share, $modalInstance) {
   $scope.share = share;
   $scope.events = share.events;
   $scope.cancel = $modalInstance.close;
@@ -80,11 +80,11 @@ function($scope, share, $modalInstance) {
       close,
       showErrorMessage);
   };
-});
+}]);
 
 module.controller(
 'EventsController',
-function($scope, $routeParams, Session, Evnt, parseyyyyMMdd) {
+['$scope', '$routeParams', 'Session', 'Evnt', 'parseyyyyMMdd', function($scope, $routeParams, Session, Evnt, parseyyyyMMdd) {
   $scope.Session = Session;
   var searchParams = {};
   var start = $routeParams.start;
@@ -117,11 +117,11 @@ function($scope, $routeParams, Session, Evnt, parseyyyyMMdd) {
       }
       $scope.errorMessage = msg;
     });
-});
+}]);
 
 module.controller(
 'EventController',
-function($scope, Session, evnt, Question) {
+['$scope', 'Session', 'evnt', 'Question', function($scope, Session, evnt, Question) {
   $scope.Session = Session;
   $scope.evnt = evnt;
   $scope.questions = [];
@@ -168,5 +168,5 @@ function($scope, Session, evnt, Question) {
       }
     }
   };
-});
+}]);
 

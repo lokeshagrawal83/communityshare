@@ -11,7 +11,7 @@ var module = angular.module(
 
 module.factory(
 'signUp',
-function($q, $http, User, Authenticator, Session, Messages) {
+['$q', '$http', 'User', 'Authenticator', 'Session', 'Messages', function($q, $http, User, Authenticator, Session, Messages) {
   var signUp = function(user, password) {
     var deferred = $q.defer();
     var dataPromise = $http({
@@ -42,11 +42,11 @@ function($q, $http, User, Authenticator, Session, Messages) {
     return deferred.promise;
   };
   return signUp;
-});
+}]);
 
 module.factory(
 'UserBase',
-function(itemFactory) {
+['itemFactory', function(itemFactory) {
   var UserBase = itemFactory('user');
   UserBase.prototype.toData = function() {
     this.cleanInstitutionAssociations();
@@ -61,11 +61,11 @@ function(itemFactory) {
     return data;
   };
   return UserBase;
-});
+}]);
 
 module.factory(
 'userLoader',
-function(User, $q) {
+['User', '$q', function(User, $q) {
   return function(userId) {
     var deferred = $q.defer();
     var userPromise = User.get(userId);
@@ -78,12 +78,12 @@ function(User, $q) {
       });
     return deferred.promise;
   };
-});
+}]);
 
 
 module.factory(
 'User',
-function(UserBase, $q, $http, Search, Conversation, SessionBase, Evnt, Messages) {
+['UserBase', '$q', '$http', 'Search', 'Conversation', 'SessionBase', 'Evnt', 'Messages', function(UserBase, $q, $http, Search, Conversation, SessionBase, Evnt, Messages) {
 
   UserBase.search = function(searchParams) {
     var deferred = $q.defer();
@@ -277,19 +277,19 @@ function(UserBase, $q, $http, Search, Conversation, SessionBase, Evnt, Messages)
   };
 
   return UserBase;
-});
+}]);
 
 module.factory(
 'Institution',
-function(itemFactory) {
+['itemFactory', function(itemFactory) {
   var Institution = itemFactory('institution');
   return Institution;
-});
+}]);
 
 // A function that bring up a modal to send a message to someone.
 module.factory(
 'startConversation',
-function($modal, $location, Conversation, Messages) {
+['$modal', '$location', 'Conversation', 'Messages', function($modal, $location, Conversation, Messages) {
   var startConversation = function(thisUser, otherUser, search, directToConversation) {
     var userId = otherUser.id;
     var searchId;
@@ -350,5 +350,5 @@ function($modal, $location, Conversation, Messages) {
     );
   };
   return startConversation;
-});
+}]);
 

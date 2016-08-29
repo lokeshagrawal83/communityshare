@@ -8,14 +8,14 @@ var module = angular.module(
 
 module.factory(
 'Answer',
-function(itemFactory) {
+['itemFactory', function(itemFactory) {
   var Answer = itemFactory('answer');
   return Answer;
-});
+}]);
 
 module.factory(
 'Question',
-function(itemFactory, $q, Answer) {
+['itemFactory', '$q', 'Answer', function(itemFactory, $q, Answer) {
   var Question = itemFactory('question');
   Question.get_many_with_answers = function(
     user_id, searchParams, answerParams, forceRefresh) {
@@ -65,5 +65,5 @@ function(itemFactory, $q, Answer) {
     return deferred.promise;
   };
   return Question;
-});
+}]);
 

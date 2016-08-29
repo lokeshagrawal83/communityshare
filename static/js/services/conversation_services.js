@@ -12,7 +12,7 @@ var module = angular.module(
 
 module.factory(
 'conversationLoader',
-function(Conversation, $q) {
+['Conversation', '$q', function(Conversation, $q) {
   return function(conversationId) {
     var deferred = $q.defer();
     var conversationPromise = Conversation.get(conversationId);
@@ -25,11 +25,11 @@ function(Conversation, $q) {
       });
     return deferred.promise;
   };
-});
+}]);
 
 module.factory(
 'Conversation',
-function(SessionBase, itemFactory, UserBase, Message, Messages, Share) {
+['SessionBase', 'itemFactory', 'UserBase', 'Message', 'Messages', 'Share', function(SessionBase, itemFactory, UserBase, Message, Messages, Share) {
   var Conversation = itemFactory('conversation');
   Conversation.prototype.toData = function() {
     var fields = ['id', 'title', 'search_id', 'userA_id', 'userB_id'];
@@ -142,11 +142,11 @@ function(SessionBase, itemFactory, UserBase, Message, Messages, Share) {
   };
 
   return Conversation;
-});
+}]);
 
 module.factory(
 'Message',
-function(itemFactory) {
+['itemFactory', function(itemFactory) {
   var Message = itemFactory('message');
   Message.prototype.toData = function() {
     var fields = ['id', 'conversation_id', 'sender_user_id', 'content', 'date_created', 'user'];
@@ -168,5 +168,5 @@ function(itemFactory) {
     }
   };
   return Message;
-});
+}]);
 

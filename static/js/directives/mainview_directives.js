@@ -71,17 +71,17 @@ function() {
 
 module.directive(
 'csForbidden',
-function(Session) {
+['Session', function(Session) {
   return {
     templateUrl: '/static/templates/forbidden.html',
-    controller: function($scope, $location) {
+    controller: ['$scope', '$location', function($scope, $location) {
       $scope.thisLocation = $location.path();
       if (!(Session.activeUser)) {
         $location.path('/login').search('goto', $scope.thisLocation);
       }
-    }
+    }]
   };
-});
+}]);
 
 module.directive(
 'csDatepicker',
@@ -91,7 +91,7 @@ function() {
       'ngModel': '='
     },
     templateUrl: '/static/templates/datepicker.html',
-    controller: function($scope) {
+    controller: ['$scope', function($scope) {
 
       $scope.today = function() {
         $scope.ngModel = new Date();
@@ -115,7 +115,7 @@ function() {
         formatYear: 'yy',
         startingDay: 1
       };
-    }
+    }]
   };
 });
 

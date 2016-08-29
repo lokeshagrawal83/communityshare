@@ -6,11 +6,12 @@ var module = angular.module('communityshare.services.modal', []);
 
 
 module.factory(
-'makeDialog', function($modal) {
+'makeDialog', ['$modal', function($modal) {
   return function(title, msg, btns) {
     var opts = {
       templateUrl: './static/templates/dialog.html',
       controller: function($scope, $modalInstance, title, msg, btns) {
+        "ngInject";
         $scope.title = title;
         $scope.msg = msg;
         $scope.btns = btns;
@@ -27,5 +28,5 @@ module.factory(
     var m = $modal.open(opts);
     return m;
   };
-});
+}]);
 

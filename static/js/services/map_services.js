@@ -9,7 +9,7 @@ var module = angular.module(
 
 module.factory(
 'locationFromAddress',
-function($q) {
+['$q', function($q) {
   var geocoder = new google.maps.Geocoder();
   var locationFromAddress = function(address) {
     var deferred = $q.defer();
@@ -23,11 +23,11 @@ function($q) {
     return deferred.promise;
   };
   return locationFromAddress;
-});
+}]);
 
 module.factory(
 'Map',
-function($q, locationFromAddress) {
+['$q', 'locationFromAddress', function($q, locationFromAddress) {
 
   var Map = function(elementId) {
     var element = document.getElementById(elementId);
@@ -61,5 +61,5 @@ function($q, locationFromAddress) {
   };
 
   return Map;
-});
+}]);
 

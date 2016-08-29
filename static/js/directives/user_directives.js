@@ -15,7 +15,7 @@ function() {
       methods: '=',
       user: '='},
     templateUrl: './static/templates/community_partner_view.html',
-    controller: function(Session, $scope, CommunityPartnerUtils, Search, Messages) {
+    controller: ['Session', '$scope', 'CommunityPartnerUtils', 'Search', 'Messages', function(Session, $scope, CommunityPartnerUtils, Search, Messages) {
       $scope.methods.onUserUpdate = function(user) {
         if (user.is_community_partner) {
           var searchesPromise = user.getSearches();
@@ -33,7 +33,7 @@ function() {
       if ($scope.user) {
         $scope.methods.onUserUpdate($scope.user);
       }
-    }
+    }]
   };
 });
 
@@ -45,7 +45,7 @@ function() {
       methods: '=',
       user: '='},
     templateUrl: './static/templates/educator_view.html',
-    controller: function(Session, $scope, Search, Messages) {
+    controller: ['Session', '$scope', 'Search', 'Messages', function(Session, $scope, Search, Messages) {
       $scope.methods.onUserUpdate = function(user) {
         var searchesPromise = user.getSearches();
         searchesPromise.then(
@@ -66,7 +66,7 @@ function() {
       if ($scope.user) {
         $scope.methods.onUserUpdate($scope.user);
       }
-    }
+    }]
   };
 });
 

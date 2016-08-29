@@ -13,31 +13,31 @@ var module = angular.module(
 
 module.controller(
 'ModalController',
-function($scope, $modalInstance) {
+['$scope', '$modalInstance', function($scope, $modalInstance) {
   $scope.closeModal = function() {
     $modalInstance.close();
   };
-});
+}]);
 
 module.controller(
 'NavigationController',
-function($scope, Session, Authenticator, $location) {
+['$scope', 'Session', 'Authenticator', '$location', function($scope, Session, Authenticator, $location) {
   $scope.Session = Session;
   $scope.logout = function() {
     Authenticator.clean();
     $location.path('');
   };
-});
+}]);
 
 module.controller(
 'MainController',
-function($scope, Session) {
+['$scope', 'Session', function($scope, Session) {
   $scope.Session = Session;
-});
+}]);
 
 module.controller(
 'AdminController',
-function(Session, $scope, $location, $http, getStatistics) {
+['Session', '$scope', '$location', '$http', 'getStatistics', function(Session, $scope, $location, $http, getStatistics) {
   $scope.Session = Session;
   $scope.searchText = {value: ''};
   $scope.now = new Date();
@@ -107,11 +107,11 @@ function(Session, $scope, $location, $http, getStatistics) {
       $scope.eventsIn30Days += $scope.statistics[l-1-j].n_events_done;
     }
   });
-});
+}]);
 
 module.controller(
 'NavbarController',
-function($scope, Messages, Session, $modal, Authenticator, $location,
+['$scope', 'Messages', 'Session', '$modal', 'Authenticator', '$location', 'makeDialog', function($scope, Messages, Session, $modal, Authenticator, $location,
          makeDialog) {
   $scope.deleteAccount = function() {
     var title = 'Delete Account';
@@ -134,5 +134,5 @@ function($scope, Messages, Session, $modal, Authenticator, $location,
         }
       });
   };
-});
+}]);
 

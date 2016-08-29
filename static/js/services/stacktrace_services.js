@@ -14,15 +14,15 @@ function () {
 
 module.provider(
 '$exceptionHandler', {
-  $get: function (errorLogService) {
+  $get: ['errorLogService', function (errorLogService) {
     return(errorLogService);
-  }
+  }]
 }
 );
 
 module.factory(
 'errorLogService',
-function ($log, $window, stacktraceService) {
+['$log', '$window', 'stacktraceService', function ($log, $window, stacktraceService) {
   function log (exception, cause) {
     $log.error.apply($log, arguments);
     try {
@@ -47,5 +47,5 @@ function ($log, $window, stacktraceService) {
     }
   }
   return(log);
-}
+}]
 );

@@ -10,7 +10,7 @@ var module = angular.module(
 
 module.factory(
 'Share',
-function(itemFactory, EvntBase, SessionBase) {
+['itemFactory', 'EvntBase', 'SessionBase', function(itemFactory, EvntBase, SessionBase) {
   var Share = itemFactory('share');
   Share.prototype.updateFromData = function(shareData) {
     this._baseUpdateFromData(shareData);
@@ -90,14 +90,14 @@ function(itemFactory, EvntBase, SessionBase) {
   };
 
   return Share;
-});
+}]);
 
 module.factory(
 'EvntBase',
-function(itemFactory) {
+['itemFactory', function(itemFactory) {
   var Evnt = itemFactory('event');
   return Evnt;
-});
+}]);
 
 var splitDateTime = function(datetime) {
 var date = new Date(datetime.getFullYear(),
@@ -125,7 +125,7 @@ return combined;
 
 module.factory(
 'eventLoader',
-function(Evnt, $q) {
+['Evnt', '$q', function(Evnt, $q) {
   return function(eventId) {
     var deferred = $q.defer();
     var eventPromise = Evnt.get(eventId);
@@ -138,11 +138,11 @@ function(Evnt, $q) {
       });
     return deferred.promise;
   };
-});
+}]);
 
 module.factory(
 'Evnt',
-function(EvntBase, Share) {
+['EvntBase', 'Share', function(EvntBase, Share) {
   var default_datetime = new Date();
   default_datetime.setHours(0, 0, 0, 0);
   EvntBase.prototype.updateFromData = function(eventData) {
@@ -169,5 +169,5 @@ function(EvntBase, Share) {
     this.datetime_stop = combineDateTime(this.date, this.time_stop);
   };
   return EvntBase;
-});
+}]);
 

@@ -15,7 +15,7 @@ var module = angular.module(
 
 module.controller(
 'UserController',
-function($scope, $routeParams, User, Session, Question, Conversation,
+['$scope', '$routeParams', 'User', 'Session', 'Question', 'Conversation', 'Evnt', 'startConversation', 'makeDialog', function($scope, $routeParams, User, Session, Question, Conversation,
          Evnt, startConversation, makeDialog) {
   $scope.Session = Session;
   var userId = $routeParams.userId;
@@ -84,7 +84,7 @@ function($scope, $routeParams, User, Session, Question, Conversation,
         }
       });
   };
-});
+}]);
 
 // User Signups
 
@@ -150,7 +150,7 @@ $scope.submit = function() {
 
 module.controller(
 'SignupCommunityPartnerController',
-function($scope, Session, Messages, $location, $q, Search,
+['$scope', 'Session', 'Messages', '$location', '$q', 'Search', 'Question', 'Answer', '$modal', function($scope, Session, Messages, $location, $q, Search,
          Question, Answer, $modal) {
   $scope.Session = Session;
   var user = Session.activeUser;
@@ -169,11 +169,11 @@ function($scope, Session, Messages, $location, $q, Search,
     });
   };
   $scope.showTutorial();
-});
+}]);
 
 module.controller(
 'SignupPersonalController',
-function($scope, Session, $fileUploader, $http, $location, support) {
+['$scope', 'Session', '$fileUploader', '$http', '$location', 'support', function($scope, Session, $fileUploader, $http, $location, support) {
   $scope.support = support;
   $scope.Session = Session;
   $scope.user = Session.activeUser;
@@ -223,11 +223,11 @@ function($scope, Session, $fileUploader, $http, $location, support) {
     }
 
   }
-});
+}]);
 
 module.controller(
 'SignupEducatorController',
-function($scope, Session, Messages, $location, $q, Search,
+['$scope', 'Session', 'Messages', '$location', '$q', 'Search', 'Question', 'Answer', '$modal', function($scope, Session, Messages, $location, $q, Search,
         Question, Answer, $modal) {
   $scope.Session = Session;
   var user = Session.activeUser;
@@ -247,13 +247,13 @@ function($scope, Session, Messages, $location, $q, Search,
     });
   };
   $scope.showTutorial();
-});
+}]);
 
 // Settings Controller
 
 module.controller(
 'SettingsController',
-function($scope, $location, Session, Messages, $q,
+['$scope', '$location', 'Session', 'Messages', '$q', 'Question', 'Answer', '$fileUploader', '$http', 'makeDialog', 'Authenticator', '$rootScope', 'support', function($scope, $location, Session, Messages, $q,
          Question, Answer, $fileUploader, $http, makeDialog, Authenticator, $rootScope,
          support) {
   $scope.support = support;
@@ -393,5 +393,5 @@ function($scope, $location, Session, Messages, $q,
       });
   };
 
-});
+}]);
 

@@ -8,7 +8,7 @@ var module = angular.module('communityshare.directives.institutions', [
 
 module.directive(
 'csInstitutions',
- function(Session, Institution) {
+ ['Session', 'Institution', function(Session, Institution) {
    return {
      scope: {
        user: '=',
@@ -17,7 +17,7 @@ module.directive(
        isCommunityPartner: '@'
      },
      templateUrl: './static/templates/institution_adder.html',
-     controller: function($scope) {
+     controller: ['$scope', function($scope) {
        $scope.isEducator = ($scope.isEducator === 'true');
        $scope.isCommunityPartner = ($scope.isCommunityPartner === 'true');
        $scope.updateInstitutions = function() {
@@ -70,22 +70,22 @@ module.directive(
          function(institutions) {
            $scope.institutions = institutions;
          });
-     }
+     }]
    };
- });
+ }]);
 
 module.directive(
 'csInstitutionAssociationEdit',
 function() {
   return {
     templateUrl: 'static/templates/institution_association.html',
-    controller: function($scope) {
+    controller: ['$scope', function($scope) {
       $scope.$watch('institutionsForm.submitted', function() {
         if ($scope.institutionsForm) {
           $scope.submitted = $scope.institutionsForm.submitted;
         }
       });
-    }
+    }]
   };
 });
 

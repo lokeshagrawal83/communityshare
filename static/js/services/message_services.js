@@ -9,7 +9,7 @@ var module = angular.module(
 
 module.factory(
 'Messages',
-function($log, $timeout) {
+['$log', '$timeout', function($log, $timeout) {
   var MESSAGETIME = 5000; //milliseconds
 
   var Message = function(text, type) {
@@ -43,5 +43,5 @@ function($log, $timeout) {
   };
 
   return new MessageHolder();
-});
+}]);
 

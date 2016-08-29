@@ -86,7 +86,7 @@ function() {
 
 module.factory(
 'labelMapping',
-function(makeBaseLabels) {
+['makeBaseLabels', function(makeBaseLabels) {
   var labellists = makeBaseLabels().all;
   var labelMapping = {};
   for (var key in labellists) {
@@ -96,11 +96,11 @@ function(makeBaseLabels) {
     }
   }
   return labelMapping;
-});
+}]);
 
 module.factory(
 'orderLabels',
-function(labelMapping) {
+['labelMapping', function(labelMapping) {
   var orderLabels = function(labels) {
     var gradeLevels = [];
     var subjectAreas = [];
@@ -119,11 +119,11 @@ function(labelMapping) {
     return combinedLabels;
   };
   return orderLabels;
-});
+}]);
 
 module.factory(
 'LabelDisplay',
-function(makeBaseLabels, labelMapping) {
+['makeBaseLabels', 'labelMapping', function(makeBaseLabels, labelMapping) {
   var LabelDisplay = function(search, type) {
     this.search = search;
     var baseLabels = makeBaseLabels();
@@ -168,7 +168,7 @@ function(makeBaseLabels, labelMapping) {
     }
   };
   return LabelDisplay;
-});
+}]);
 
 module.directive(
 'csNewLabel',
@@ -177,13 +177,13 @@ module.directive(
      scope: {
        methods: '='
      },
-     controller: function($scope) {
+     controller: ['$scope', function($scope) {
        $scope.update = function() {
          if ($scope.methods.onUpdate) {
            $scope.methods.onUpdate();
          }
        };
-     },
+     }],
      link: function(scope, elm) {
        elm.bind('keydown', function(event) {
          var ENTERCODE = 13;
@@ -240,6 +240,7 @@ $scope.toggleLabel = function(label) {
   }
 };
 };
+LabelsController.$inject = ['$scope', 'LabelDisplay', 'getAllLabels'];
 
 /*
 - list of labels.

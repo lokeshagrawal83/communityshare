@@ -21,7 +21,7 @@ return message;
 
 module.controller(
 'MessagesController',
-function($scope, Session, Conversation, $location, $modal) {
+['$scope', 'Session', 'Conversation', '$location', '$modal', function($scope, Session, Conversation, $location, $modal) {
   $scope.Session = Session;
   var user = Session.activeUser;
   if (user) {
@@ -50,11 +50,11 @@ function($scope, Session, Conversation, $location, $modal) {
   if (showModal) {
     $scope.showThankYou();
   }
-});
+}]);
 
 module.controller(
 'ConversationController',
-function($scope, $q, $location, $timeout, $modal, Session,
+['$scope', '$q', '$location', '$timeout', '$modal', 'Session', 'Conversation', 'Message', 'User', 'Share', 'makeDialog', 'conversation', function($scope, $q, $location, $timeout, $modal, Session,
          Conversation, Message, User, Share, makeDialog, conversation) {
   $scope.Session = Session;
   if ((conversation === undefined) || (Session.activeUser === undefined)) {
@@ -182,11 +182,11 @@ function($scope, $q, $location, $timeout, $modal, Session,
         }
       });
   };
-});
+}]);
 
 module.controller(
 'NewConversationController',
-function (Session, $scope, $modalInstance, userId, searchId, User,
+['Session', '$scope', '$modalInstance', 'userId', 'searchId', 'User', 'Conversation', 'Message', 'Authenticator', 'Messages', function (Session, $scope, $modalInstance, userId, searchId, User,
           Conversation, Message, Authenticator, Messages) {
   var userPromise = User.get(userId);
   $scope.Session = Session;
@@ -244,5 +244,5 @@ function (Session, $scope, $modalInstance, userId, searchId, User,
         $scope.errorMessage = combineMessages(baseMessage, message);
       });
   };
-});
+}]);
 

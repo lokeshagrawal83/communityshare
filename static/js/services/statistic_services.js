@@ -8,7 +8,7 @@ var module = angular.module(
 
 module.factory(
 'getStatistics',
-function($q, $http) {
+['$q', '$http', function($q, $http) {
   var getStatistics = function() {
     var url = '/api/statistics';
     var statisticsPromise = $http({
@@ -30,5 +30,5 @@ function($q, $http) {
     return deferred.promise;
   };
   return getStatistics;
-});
+}]);
 

@@ -10,7 +10,7 @@ var module = angular.module(
 
 module.controller(
 'MatchesController',
-function($scope, Session, Search, $location, labelMapping, makeDialog,
+['$scope', 'Session', 'Search', '$location', 'labelMapping', 'makeDialog', 'startConversation', 'Messages', '$modal', function($scope, Session, Search, $location, labelMapping, makeDialog,
          startConversation, Messages, $modal) {
   $scope.Session = Session;
   $scope.labelMapping = labelMapping;
@@ -134,11 +134,11 @@ function($scope, Session, Search, $location, labelMapping, makeDialog,
     }
     return pages;
   };
-});
+}]);
 
 module.controller(
 'SearchResultsController',
-function(Session, $scope, $location, $routeParams, $modal, Search, Messages, labelMapping) {
+['Session', '$scope', '$location', '$routeParams', '$modal', 'Search', 'Messages', 'labelMapping', function(Session, $scope, $location, $routeParams, $modal, Search, Messages, labelMapping) {
   $scope.Session = Session;
   var searchId = $routeParams.searchId;
   $scope.infoMessage = 'Searching for matches...';
@@ -181,11 +181,11 @@ function(Session, $scope, $location, $routeParams, $modal, Search, Messages, lab
         $scope.errorMessage = 'Failed to find matches' + msg;
       });
   }
-});
+}]);
 
 module.controller(
 'SearchEditController',
-function(Session, $location, $scope, $routeParams, Search, Messages) {
+['Session', '$location', '$scope', '$routeParams', 'Search', 'Messages', function(Session, $location, $scope, $routeParams, Search, Messages) {
   $scope.Session = Session;
   var searchId = $routeParams.searchId;
   if (searchId !== undefined) {
@@ -233,11 +233,11 @@ function(Session, $location, $scope, $routeParams, Search, Messages) {
       $location.path('/searchusers/' + $scope.searchText.value);
     }
   };
-});
+}]);
 
 module.controller(
 'SearchUsersController',
-function($scope, $location, $q, User, Session, $routeParams, parseyyyyMMdd,
+['$scope', '$location', '$q', 'User', 'Session', '$routeParams', 'parseyyyyMMdd', 'startConversation', function($scope, $location, $q, User, Session, $routeParams, parseyyyyMMdd,
          startConversation) {
   $scope.Session = Session;
   $scope.startConversation = startConversation;
@@ -308,5 +308,5 @@ function($scope, $location, $q, User, Session, $routeParams, parseyyyyMMdd,
   $scope.newSearch = function() {
     $location.path('/searchusers/' + $scope.searchText.value);
   };
-});
+}]);
 

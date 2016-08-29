@@ -23,15 +23,15 @@ if (!window.history.replaceState) {
 
 app = angular.module('communityshare', requirements);
 
-app.config(function ($routeProvider) {
+app.config(['$routeProvider', function ($routeProvider) {
 
     $routeProvider.when('/', {
         templateUrl: './static/templates/default.html',
         controller: 'DefaultController',
         resolve: {
-            user: function (activeUserLoader) {
+            user: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -48,9 +48,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/signup_community_partner.html',
         controller: 'SignupCommunityPartnerController',
         resolve: {
-            user: function (activeUserLoader) {
+            user: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -58,9 +58,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/signup_personal.html',
         controller: 'SignupPersonalController',
         resolve: {
-            user: function (activeUserLoader) {
+            user: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -68,9 +68,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/signup_educator.html',
         controller: 'SignupEducatorController',
         resolve: {
-            user: function (activeUserLoader) {
+            user: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -93,9 +93,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/settings.html',
         controller: 'SettingsController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -103,9 +103,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/messages.html',
         controller: 'MessagesController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -113,9 +113,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/shares.html',
         controller: 'SharesController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -123,9 +123,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/user_view.html',
         controller: 'UserController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -133,9 +133,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/search_edit.html',
         controller: 'SearchEditController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -143,9 +143,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/search_users.html',
         controller: 'SearchUsersController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -153,9 +153,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/search_users.html',
         controller: 'SearchUsersController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -163,9 +163,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/matches.html',
         controller: 'MatchesController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -173,9 +173,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/admin.html',
         controller: 'AdminController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -184,9 +184,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/search_results.html',
         controller: 'SearchResultsController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -194,9 +194,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/search.html',
         controller: 'SearchEditController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -204,9 +204,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/unviewed_conversations.html',
         controller: 'UnviewedConversationController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -214,9 +214,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/events.html',
         controller: 'EventsController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -224,12 +224,12 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/event_view.html',
         controller: 'EventController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            },
-            evnt: function (eventLoader, $route) {
+            }],
+            evnt: ['eventLoader', '$route', function (eventLoader, $route) {
                 return eventLoader($route.current.params.eventId);
-            }
+            }]
         }
     });
 
@@ -237,12 +237,12 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/conversation.html',
         controller: 'ConversationController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            },
-            conversation: function (conversationLoader, $route) {
+            }],
+            conversation: ['conversationLoader', '$route', function (conversationLoader, $route) {
                 return conversationLoader($route.current.params.conversationId);
-            }
+            }]
         }
     });
 
@@ -250,9 +250,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/share_edit.html',
         controller: 'NewShareController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -260,9 +260,9 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/share.html',
         controller: 'ShareController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
@@ -270,16 +270,16 @@ app.config(function ($routeProvider) {
         templateUrl: './static/templates/auth_redirect.html',
         controller: 'AuthRedirectController',
         resolve: {
-            activeUser: function (activeUserLoader) {
+            activeUser: ['activeUserLoader', function (activeUserLoader) {
                 return activeUserLoader();
-            }
+            }]
         }
     });
 
     $routeProvider.otherwise({
         templateUrl: './static/templates/unknown.html'
     });
-});
+}]);
 
 //http://stackoverflow.com/questions/16098430/angular-ie-caching-issue-for-http
 app.config(['$httpProvider', function ($httpProvider) {

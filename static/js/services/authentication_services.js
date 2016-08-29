@@ -12,13 +12,13 @@ var module = angular.module(
 
 module.factory(
 'activeUserLoader',
-function(SessionBase) {
+['SessionBase', function(SessionBase) {
   return SessionBase.getActiveUserPromise;
-});
+}]);
 
 module.factory(
 'SessionBase',
-function($q) {
+['$q', function($q) {
   var SessionBase = {};
   var deferred;
   SessionBase.clearUser = function() {
@@ -37,18 +37,18 @@ function($q) {
   };
   SessionBase.clearUser();
   return SessionBase;
-});
+}]);
 
 module.factory(
 'Session',
-function(SessionBase, Authenticator) {
+['SessionBase', 'Authenticator', function(SessionBase, Authenticator) {
   Authenticator.authenticateFromCookie();
   return SessionBase;
-});
+}]);
 
 module.factory(
 'Authenticator',
-function($q, $http, User, SessionBase, $cookies, $cookieStore) {
+['$q', '$http', 'User', 'SessionBase', '$cookies', '$cookieStore', function($q, $http, User, SessionBase, $cookies, $cookieStore) {
   var Authenticator = {};
   Authenticator.clean = function() {
     $http.defaults.headers.common.Authorization = '';
@@ -215,6 +215,6 @@ function($q, $http, User, SessionBase, $cookies, $cookieStore) {
     return deferred.promise;
   };
   return Authenticator;
-}
+}]
 );
 

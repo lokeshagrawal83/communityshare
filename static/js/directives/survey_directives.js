@@ -13,11 +13,11 @@ function() {
       question: '=',
       answers: '='
     },
-    controller: function($scope) {
+    controller: ['$scope', function($scope) {
       // Set custom_answer to ' ' so that it is not initally
       // selected.
       $scope.custom_answer = ' ';
-    },
+    }],
     templateUrl: 'static/templates/question.html'
   };
 });

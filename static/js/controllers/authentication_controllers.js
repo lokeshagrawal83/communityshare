@@ -10,7 +10,7 @@ var module = angular.module(
 
 module.controller(
 'ResetPasswordController',
-function($scope, Authenticator, $routeParams, $location) {
+['$scope', 'Authenticator', '$routeParams', '$location', function($scope, Authenticator, $routeParams, $location) {
   var key = $routeParams.key;
   $scope.password = {
     password: '',
@@ -32,11 +32,11 @@ function($scope, Authenticator, $routeParams, $location) {
         $scope.errorMessage = message;
       });
   };
-});
+}]);
 
 module.controller(
 'RequestResetPasswordController',
-function($scope, Authenticator) {
+['$scope', 'Authenticator', function($scope, Authenticator) {
   $scope.email = {value: ''};
   $scope.successfulRequest = false;
   $scope.failedRequest = false;
@@ -60,11 +60,11 @@ function($scope, Authenticator) {
         $scope.errorMessage = msg;
       });
   };
-});
+}]);
 
 module.controller(
 'ConfirmEmailController',
-function($scope, Authenticator, $routeParams) {
+['$scope', 'Authenticator', '$routeParams', function($scope, Authenticator, $routeParams) {
   var key = $routeParams.key;
   $scope.confirmed = false;
   $scope.failedReset = false;
@@ -76,11 +76,11 @@ function($scope, Authenticator, $routeParams) {
     function(message) {
       $scope.errorMessage = message;
     });
-});
+}]);
 
 module.controller(
 'DefaultController',
-function($scope, user, $location, User, signUp, Messages, $modal, support) {
+['$scope', 'user', '$location', 'User', 'signUp', 'Messages', '$modal', 'support', function($scope, user, $location, User, signUp, Messages, $modal, support) {
   $scope.support = support;
   if (user) {
     if (user.accountCreationStatus === 'choice') {
@@ -167,11 +167,11 @@ function($scope, user, $location, User, signUp, Messages, $modal, support) {
   if (showModal == 'privacy') {
     $scope.showPrivacy();
   }
-});
+}]);
 
 module.controller(
 'AuthRedirectController',
-function ($scope, Authenticator, Messages) {
+['$scope', 'Authenticator', 'Messages', function ($scope, Authenticator, Messages) {
   $scope.resendEmailConfirmation = function() {
     var emailConfirmPromise = Authenticator.requestConfirmEmail();
     emailConfirmPromise.then(
@@ -182,12 +182,12 @@ function ($scope, Authenticator, Messages) {
         Messages.error(errorMessage);
       });
   };
-}
+}]
 );
 
 module.controller(
 'LoginController',
-function(Session, $scope, $location, Authenticator) {
+['Session', '$scope', '$location', 'Authenticator', function(Session, $scope, $location, Authenticator) {
   var nextLocation = $location.search().goto;
   $scope.email = {value: undefined};
   $scope.password = {value: undefined};
@@ -219,5 +219,5 @@ function(Session, $scope, $location, Authenticator) {
       }
     );
   };
-});
+}]);
 

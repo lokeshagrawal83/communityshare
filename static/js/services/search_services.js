@@ -11,7 +11,7 @@ var module = angular.module(
 
 module.factory(
 'getAllLabels',
-function($q, $http) {
+['$q', '$http', function($q, $http) {
   var getAllLabels = function() {
     var url = '/api/labels';
     var labelsPromise = $http({
@@ -31,11 +31,11 @@ function($q, $http) {
     return deferred.promise;
   };
   return getAllLabels;
-});
+}]);
 
 module.factory(
 'LabelMapping',
-function(makeBaseLabels) {
+['makeBaseLabels', function(makeBaseLabels) {
   var labellists = makeBaseLabels().all;
   var labelMapping = {};
   for (var key in labellists) {
@@ -45,11 +45,11 @@ function(makeBaseLabels) {
     }
   }
   return labelMapping;
-});
+}]);
 
 module.factory(
 'Search',
-function(itemFactory, $q, $http, labelMapping, UserBase, orderLabels) {
+['itemFactory', '$q', '$http', 'labelMapping', 'UserBase', 'orderLabels', function(itemFactory, $q, $http, labelMapping, UserBase, orderLabels) {
 
   var compareLabels = function(targetLabels, retrievedLabels) {
     var matchingLabels = {};
@@ -138,4 +138,4 @@ function(itemFactory, $q, $http, labelMapping, UserBase, orderLabels) {
     return deferred.promise;
   };
   return Search;
-});
+}]);

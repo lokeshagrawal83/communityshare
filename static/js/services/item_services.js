@@ -11,7 +11,7 @@ var module = angular.module(
 
 module.factory(
 'itemFactory',
-function($q, $http, SessionBase) {
+['$q', '$http', 'SessionBase', function($q, $http, SessionBase) {
   var itemFactory = function(resourceName) {
     var Item = function(itemData) {
       this.updateFromData(itemData);
@@ -182,4 +182,4 @@ function($q, $http, SessionBase) {
     return Item;
   };
   return itemFactory;
-});
+}]);
