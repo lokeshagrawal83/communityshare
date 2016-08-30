@@ -10,9 +10,8 @@
     "webpack": "1.13.1"
   },
   "scripts": {
-    "build": "./node_modules/.bin/webpack -p",
-    "start": "./node_modules/.bin/webpack --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "docker-compose up",
+    "test": "docker-compose run --rm server python /communityshare/tests.py"
   },
   "repository": {
     "type": "git",

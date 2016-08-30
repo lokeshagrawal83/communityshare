@@ -6,7 +6,8 @@ import logging
 import json
 import datetime
 
-from community_share import setup, app, mail, config, time_format, store
+import setup
+from community_share import app, mail, config, time_format, store
 from community_share.models.share import EventReminder, Event
 from community_share.models.user import User
 from community_share.models.conversation import Conversation
