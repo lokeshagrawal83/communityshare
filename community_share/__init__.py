@@ -77,8 +77,6 @@ class Config(object):
         'LOGGING_LEVEL', 'LOGGING_LOCATION',
         # S3 bucket
         'S3_BUCKETNAME', 'S3_KEY', 'S3_USERNAME', 'UPLOAD_LOCATION',
-        # Version
-        'COMMIT_HASH',
         # Cryptography
         'ENCRYPTION_KEY',
         # SSL

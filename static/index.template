@@ -11,17 +11,13 @@
     <meta name="author" content="" />
 
     <link rel="stylesheet"
-          href="/static/css/styles.css?q={{COMMIT_HASH}}"
-          type="text/css" />
-    <link rel="stylesheet"
           href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"
           type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
           rel="stylesheet"
           type="text/css">
-    <link rel="stylesheet"
-          href="/static/css/base.css?q={{COMMIT_HASH}}"
-          type="text/css" />
+
+    {{ stylesheet_tag( 'bundle' ) | safe }}
 
     <!--[if lte IE 9]>
       <script src="./static/js/lib/jquery-1.11.1.min.js"></script>
@@ -42,44 +38,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-route.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-resource.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-cookies.min.js"></script>
-    <script src="./static/js/main.js?q={{COMMIT_HASH}}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
     <script src="./static/js/lib/angular-file-upload.js"></script>
     <script src="./static/js/lib/jquery-1.11.1.min.js"></script>
     <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>-->
-
-    <script src="./static/js/controllers/authentication_controllers.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/controllers/misc_controllers.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/controllers/user_controllers.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/controllers/search_controllers.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/controllers/message_controllers.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/controllers/conversation_controllers.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/controllers/share_controllers.js?q={{COMMIT_HASH}}"></script>
-
-    <script src="./static/js/services/authentication_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/item_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/user_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/search_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/map_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/message_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/modal_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/conversation_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/utility_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/share_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/survey_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/statistic_services.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/services/stacktrace_services.js?q={{COMMIT_HASH}}"></script>
-
-    <script src="./static/js/directives/mainview_directives.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/directives/user_directives.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/directives/label_directives.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/directives/institution_directives.js?q={{COMMIT_HASH}}"></script>
-    <script src="./static/js/directives/survey_directives.js?q={{COMMIT_HASH}}"></script>
-
     <!--[if lt IE 9]>
       <script src="./static/js/lib/angular-shims-placeholder.min.js"></script>
     <![endif]-->
 
+    {{ javascript_tag( 'bundle' ) | safe }}
   </body>
 
 </html>

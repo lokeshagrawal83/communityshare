@@ -16,8 +16,6 @@ from community_share.routes.statistics_routes import register_statistics_routes
 logger = logging.getLogger(__name__)
 
 def make_app():
-    logger.debug('COMMIT_HASH is {0}'.format(config.COMMIT_HASH))
-
     webpack = Webpack()
     app = Flask(__name__, template_folder='static/')
 
@@ -63,10 +61,8 @@ def make_app():
     @app.route('/')
     def index():
         logger.debug('rendering index')
-        return render_template('index.html', COMMIT_HASH=config.COMMIT_HASH,
-                               config=config
-        )
-        
+        return render_template('index.html', config=config)
+
     return app
 
 if __name__ == '__main__':

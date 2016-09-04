@@ -1,6 +1,5 @@
 {
   "APP_ENV": "development",
-  "COMMIT_HASH": "blah",
   "ABUSE_EMAIL_ADDRESS": "support@example.com",
   "ADMIN_EMAIL_ADDRESSES": "another-admin@example.com",
   "BASEURL": "http://0.0.0.0:5000",

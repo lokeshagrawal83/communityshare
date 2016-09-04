@@ -13,11 +13,11 @@ from community_share.routes.survey_routes import register_survey_routes
 from community_share.routes.email_routes import register_email_routes
 from community_share.routes.statistics_routes import register_statistics_routes
 
+YEAR_IN_SECONDS = 31536000
+
 logger = logging.getLogger(__name__)
 
 def make_app():
-    logger.debug('COMMIT_HASH is {0}'.format(config.COMMIT_HASH))
-
     webpack = Webpack()
     app = Flask(__name__, template_folder='../static/')
 
@@ -43,7 +43,11 @@ def make_app():
 
     @app.route('/static/build/<path:filename>')
     def build_static(filename):
-        return send_from_directory(app.root_path + '/../static/build/', filename)
+        return send_from_directory(
+            app.root_path + '/../static/build/',
+            filename,
+            cache_timeout=YEAR_IN_SECONDS
+        )
 
     @app.route('/static/js/<path:filename>')
     def js_static(filename):
@@ -68,8 +72,6 @@ def make_app():
     @app.route('/')
     def index():
         logger.debug('rendering index')
-        return render_template('index.html', COMMIT_HASH=config.COMMIT_HASH,
-                               config=config
-        )
-        
+        return render_template('index.html', config=config)
+
     return app

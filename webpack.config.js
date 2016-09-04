@@ -1,5 +1,6 @@
 var path = require( 'path' );
 var webpack = require( 'webpack' );
+var ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
 var ManifestPlugin = require( 'manifest-revision-webpack-plugin' );
 
 module.exports = {
@@ -15,6 +16,14 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loaders: [ 'ng-annotate' ]
+            },
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract( 'style-loader', 'css-loader' )
+            },
+            {
+                test: /\.(eot|svg|ttf|woff|woff2)$/,
+                loader: 'file?name=static/fonts/[name].[ext]'
             }
         ]
     },
@@ -23,12 +32,18 @@ module.exports = {
             rootAssetPath: './static/build/',
             ignorePaths: [ /\.map$/ ],
             extensionsRegex: /\.js$/
-        } )
+        } ),
+        new ExtractTextPlugin( 'bundle.[chunkhash].css', { allChunks: true } )
     ],
     output: {
         path: path.join( __dirname, 'static', 'build' ),
-        filename: '[name].[hash].js'
+        filename: '[name].[chunkhash].js'
     },
-    devtool: 'source-map'
+    devtool: 'source-map',
+    // needed because we won't get inotify/fsevents
+    // inside of the Docker images
+    watchOptions: {
+      poll: true
+    }
 };
 

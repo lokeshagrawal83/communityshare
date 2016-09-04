@@ -11,17 +11,13 @@
     <meta name="author" content="" />
 
     <link rel="stylesheet"
-          href="/static/css/styles.css?q={{COMMIT_HASH}}"
-          type="text/css" />
-    <link rel="stylesheet"
           href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"
           type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
           rel="stylesheet"
           type="text/css">
-    <link rel="stylesheet"
-          href="/static/css/base.css?q={{COMMIT_HASH}}"
-          type="text/css" />
+
+    {{ stylesheet_tag( 'bundle' ) | safe }}
 
     <!--[if lte IE 9]>
       <script src="./static/js/lib/jquery-1.11.1.min.js"></script>

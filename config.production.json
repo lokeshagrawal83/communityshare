@@ -1,6 +1,5 @@
 {
   "APP_ENV": "production",
-  "COMMIT_HASH": "af2f765d57bbc6bb644c04218fabccf4cd7e44a4",
   "BASEURL": "http://app.communityshare.us",
   "BUG_EMAIL_ADDRESS": "tech@mail.app.communityshare.us",
   "DONOTREPLY_EMAIL_ADDRESS": "CommunityShare <support@mail.app.communityshare.us>",

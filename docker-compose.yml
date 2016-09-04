@@ -26,21 +26,13 @@ services:
       - .:/communityshare
     privileged: true
 
-  npm:
-    build: .
-    command: npm install
-    working_dir: /communityshare
-    volumes:
-      - .:/communityshare
-
   webpack:
     build: .
-    command: /communityshare/node_modules/.bin/webpack --watch
+    command: /communityshare/start_webpack.sh
     working_dir: /communityshare
     volumes:
       - .:/communityshare
-    depends_on:
-      - npm
+    privileged: true
 
 networks:
   app:
