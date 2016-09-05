@@ -26,3 +26,14 @@ def is_email(s):
         ) != None:
             return True
     return False
+
+
+def int_or(value, default):
+    try:
+        return int(value)
+    except:
+        return default
+
+
+def clamped(low, high, value):
+    return min(high, max(low, value))

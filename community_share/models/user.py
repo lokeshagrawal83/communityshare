@@ -357,10 +357,17 @@ class User(Base, Serializable):
             mail_actions.send_partner_deletion_message(other_user, self, share.conversation)
 
     @classmethod
-    def search(cls, search_text, date_created_greaterthan, date_created_lessthan):
-        '''
+    def search(
+            cls,
+            search_text,
+            date_created_greaterthan,
+            date_created_lessthan,
+            number=1000,
+            offset=0,
+    ):
+        """
         searchText can match name, email, institution name
-        '''
+        """
         query = store.session.query(User).outerjoin(InstitutionAssociation).outerjoin(Institution)
         if search_text:
             name_condition = User.name.ilike('%' + search_text + '%')
@@ -368,13 +375,14 @@ class User(Base, Serializable):
             institution_condition = Institution.name.ilike('%' + search_text + '%')
             biography_condition = User.bio.ilike('%' + search_text + '%')
             query = query.filter(or_(name_condition, email_condition, \
-                institution_condition, biography_condition))
+                                     institution_condition, biography_condition))
         if date_created_greaterthan:
             query = query.filter(User.date_created > date_created_greaterthan)
         if date_created_lessthan:
             query = query.filter(User.date_created < date_created_lessthan)
         query = query.filter(User.active == True)
-        users = query.all()
+        users = query.limit(number).offset(offset)
+
         return users
 
     @classmethod

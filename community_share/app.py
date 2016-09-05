@@ -13,6 +13,8 @@ from community_share.routes.survey_routes import register_survey_routes
 from community_share.routes.email_routes import register_email_routes
 from community_share.routes.statistics_routes import register_statistics_routes
 
+import community_share.api
+
 YEAR_IN_SECONDS = 31536000
 
 logger = logging.getLogger(__name__)
@@ -37,6 +39,8 @@ def make_app():
     register_survey_routes(app)
     register_email_routes(app)
     register_statistics_routes(app)
+
+    community_share.api.register_routes(app)
 
     @app.teardown_appcontext
     def close_db_connection(exception):
