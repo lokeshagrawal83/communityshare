@@ -50,3 +50,17 @@ docker-compose run --rm server python /communityshare/tests.py
 # via npm
 npm test
 ```
+
+### Formatting
+
+There is a script to format python files. It should be run before any python PR is merged.
+
+```bash
+npm run format
+```
+
+By default, this script formats every file in the project, which can take several seconds. You can pass filenames as an additional argument to format only some files, which is much faster.
+
+```bash
+npm run format app.py setup.py
+```

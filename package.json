@@ -22,7 +22,8 @@
   },
   "scripts": {
     "start": "docker-compose stop && docker-compose up",
-    "test": "docker-compose run --rm server python /communityshare/tests.py"
+    "test": "docker-compose run --rm server python /communityshare/tests.py",
+    "format": "docker-compose run --rm server sh /communityshare/format.sh"
   },
   "repository": {
     "type": "git",
