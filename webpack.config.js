@@ -5,11 +5,17 @@ var ManifestPlugin = require( 'manifest-revision-webpack-plugin' );
 
 module.exports = {
     entry: {
-        bundle: path.join( __dirname, 'static', 'js', 'index.js' )
+        bundle: path.join( __dirname, 'static', 'js', 'index.js' ),
+        vendor: [
+            'angular',
+            'angular-animate',
+            'angular-cookies',
+            'angular-resource',
+            'angular-route',
+            'error-stack-parser',
+            'jquery'
+        ]
     },
-    externals: [ {
-        angular: true
-    } ],
     module: {
         loaders: [
             {
@@ -33,7 +39,11 @@ module.exports = {
             ignorePaths: [ /\.map$/ ],
             extensionsRegex: /\.js$/
         } ),
-        new ExtractTextPlugin( 'bundle.[chunkhash].css', { allChunks: true } )
+        new ExtractTextPlugin( 'bundle.[chunkhash].css', { allChunks: true } ),
+        new webpack.optimize.CommonsChunkPlugin( 'vendor', 'vendor.bundle.[chunkhash].js' ),
+        new webpack.ProvidePlugin( {
+           $: 'jquery'
+        } )
     ],
     output: {
         path: path.join( __dirname, 'static', 'build' ),

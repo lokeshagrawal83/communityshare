@@ -2,15 +2,9 @@
 //http://www.bennadel.com/blog/2542-logging-client-side-errors-with-angularjs-and-stacktrace-js.htm
 
 var angular = require( 'angular' );
+var errorStackParser = require( 'error-stack-parser' );
 
 var module = angular.module('communityshare.services.stacktrace', []);
-
-module.factory(
-'stacktraceService',
-function () {
-  return({ print: printStackTrace });
-}
-);
 
 module.provider(
 '$exceptionHandler', {
@@ -22,12 +16,12 @@ module.provider(
 
 module.factory(
 'errorLogService',
-['$log', '$window', 'stacktraceService', function ($log, $window, stacktraceService) {
+['$log', '$window', function ($log, $window) {
   function log (exception, cause) {
     $log.error.apply($log, arguments);
     try {
       var errorMessage = exception.toString();
-      var stackTrace = stacktraceService.print({ e: exception });
+      var stackTrace = JSON.stringify( errorStackParser.parse( exception ) );
       $.ajax({
         type: 'POST',
         url: 'http://localhost:3030/error-log',
