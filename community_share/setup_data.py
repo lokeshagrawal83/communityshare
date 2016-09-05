@@ -1,48 +1,64 @@
 from community_share.models.survey import Question, SuggestedAnswer
 
+
 def get_questions(creator):
     questions = [
-        
         Question(
             text='What types of organizations have you volunteered with in the past?',
             creator=creator,
             question_type='signup_community_partner',
             public=True,
             only_suggested_answers=False,
-            order = 0,
+            order=0,
             suggested_answers=[
-                SuggestedAnswer(creator=creator,
-                                text='Schools'),
-                SuggestedAnswer(creator=creator,
-                                text='Nonprofits'),
-                SuggestedAnswer(creator=creator,
-                                text='Schools and Nonprofits'),
-                SuggestedAnswer(creator=creator,
-                                text='I have no previous volunteer experience'),
-            ]
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Schools',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Nonprofits',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Schools and Nonprofits',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='I have no previous volunteer experience',
+                ),
+            ],
         ),
-
         Question(
             text='How often do you volunteer?',
             creator=creator,
             question_type='signup_community_partner',
             public=True,
             only_suggested_answers=False,
-            order = 0,
+            order=0,
             suggested_answers=[
-                SuggestedAnswer(creator=creator,
-                                text="I don't"),
-                SuggestedAnswer(creator=creator,
-                                text='Once a year'),
-                SuggestedAnswer(creator=creator,
-                                text='Once a month'),
-                SuggestedAnswer(creator=creator,
-                                text='Once a week'),
-                SuggestedAnswer(creator=creator,
-                                text='Every day'),
-            ]
+                SuggestedAnswer(
+                    creator=creator,
+                    text="I don't",
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Once a year',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Once a month',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Once a week',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Every day',
+                ),
+            ],
         ),
-
         Question(
             text='How often do you bring in community partners each year?',
             creator=creator,
@@ -51,15 +67,23 @@ def get_questions(creator):
             only_suggested_answers=False,
             order=0,
             suggested_answers=[
-                SuggestedAnswer(creator=creator,
-                                text='Never'),
-                SuggestedAnswer(creator=creator,
-                                text='A few times'),
-                SuggestedAnswer(creator=creator,
-                                text='6+ times'),
-                SuggestedAnswer(creator=creator,
-                                text='Dozens'),
-            ]
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Never',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='A few times',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='6+ times',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Dozens',
+                ),
+            ],
         ),
         Question(
             text='How did you hear about CommunityShare?',
@@ -69,14 +93,22 @@ def get_questions(creator):
             only_suggested_answers=False,
             order=2,
             suggested_answers=[
-                SuggestedAnswer(creator=creator,
-                                text='Colleague'),
-                SuggestedAnswer(creator=creator,
-                                text='Friend'),
-                SuggestedAnswer(creator=creator,
-                                text='Media'),
-                SuggestedAnswer(creator=creator,
-                                text='Web search'),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Colleague',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Friend',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Media',
+                ),
+                SuggestedAnswer(
+                    creator=creator,
+                    text='Web search',
+                ),
             ],
         ),
         Question(
@@ -88,7 +120,7 @@ def get_questions(creator):
             only_suggested_answers=False,
             requires_event_id=True,
             requires_user_id=True,
-            order=1
+            order=1,
         ),
         Question(
             text='Do you have any feedback for the CommunityShare administrators?',
@@ -98,7 +130,7 @@ def get_questions(creator):
             public=False,
             only_suggested_answers=False,
             requires_event_id=True,
-            order=2
+            order=2,
         ),
     ]
     return questions

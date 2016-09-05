@@ -14,6 +14,7 @@ Base = declarative_base()
 
 logger = logging.getLogger(__name__)
 
+
 def setup_logging(level, location):
     "Utility function for setting up logging."
     if not os.path.exists(location):
@@ -28,7 +29,7 @@ def setup_logging(level, location):
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     ch.setFormatter(formatter)
     # Which packages do we want to log from.
-    packages = ('__main__', 'community_share',)
+    packages = ('__main__', 'community_share')
     for package in packages:
         logger = logging.getLogger(package)
         logger.addHandler(ch)
@@ -40,9 +41,9 @@ def setup_logging(level, location):
         logger.addHandler(ch)
         logger.setLevel(logging.WARNING)
     logger.debug('Finished setting up logging.')
-    
-class Store(object):
 
+
+class Store(object):
     def __init__(self):
         pass
 
@@ -59,6 +60,7 @@ class Store(object):
     def session(self):
         return self._session
 
+
 store = Store()
 
 
@@ -68,19 +70,29 @@ class Config(object):
         # Database
         'DB_CONNECTION',
         # Email 
-        'MAILER_TYPE', # Can be 'MAILGUN' or 'DUMMY' or 'QUEUE'
-        'MAILGUN_API_KEY', 'MAILGUN_DOMAIN', 'DONOTREPLY_EMAIL_ADDRESS', 'SUPPORT_EMAIL_ADDRESS',
-        'BUG_EMAIL_ADDRESS', 'ABUSE_EMAIL_ADDRESS', 'ADMIN_EMAIL_ADDRESSES', 'NOTIFY_EMAIL_ADDRESS',
+        'MAILER_TYPE',  # Can be 'MAILGUN' or 'DUMMY' or 'QUEUE'
+        'MAILGUN_API_KEY',
+        'MAILGUN_DOMAIN',
+        'DONOTREPLY_EMAIL_ADDRESS',
+        'SUPPORT_EMAIL_ADDRESS',
+        'BUG_EMAIL_ADDRESS',
+        'ABUSE_EMAIL_ADDRESS',
+        'ADMIN_EMAIL_ADDRESSES',
+        'NOTIFY_EMAIL_ADDRESS',
         # Location
         'BASEURL',
         # Logging
-        'LOGGING_LEVEL', 'LOGGING_LOCATION',
+        'LOGGING_LEVEL',
+        'LOGGING_LOCATION',
         # S3 bucket
-        'S3_BUCKETNAME', 'S3_KEY', 'S3_USERNAME', 'UPLOAD_LOCATION',
+        'S3_BUCKETNAME',
+        'S3_KEY',
+        'S3_USERNAME',
+        'UPLOAD_LOCATION',
         # Cryptography
         'ENCRYPTION_KEY',
         # SSL
-        'SSL'
+        'SSL',
     }
 
     def load_config(self, filename):

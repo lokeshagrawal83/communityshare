@@ -9,8 +9,10 @@ from community_share import Base, store
 
 logger = logging.getLogger(__name__)
 
+
 class ValidationException(Exception):
     pass
+
 
 class Serializable(object):
     """
@@ -47,8 +49,7 @@ class Serializable(object):
         if requester is not None:
             if requester.is_administrator:
                 has_rights = True
-            elif (self.PERMISSIONS['admin_can_delete'] and
-                  self.has_admin_rights(requester)):
+            elif (self.PERMISSIONS['admin_can_delete'] and self.has_admin_rights(requester)):
                 has_rights = True
         return has_rights
 
@@ -106,9 +107,11 @@ class Serializable(object):
     def admin_deserialize_update(self, data, add=False):
         logger.debug('admin_deserialize_update')
         if add:
-            fieldnames = (set(self.MANDATORY_FIELDS) |
-                          set(self.WRITEABLE_FIELDS) |
-                          set(self.WRITEABLE_ONCE_FIELDS))
+            fieldnames = (
+                set(self.MANDATORY_FIELDS) |
+                set(self.WRITEABLE_FIELDS) |
+                set(self.WRITEABLE_ONCE_FIELDS)
+            ) # yapf: disable
         else:
             fieldnames = self.WRITEABLE_FIELDS
         for fieldname in data.keys():
@@ -125,15 +128,15 @@ class Serializable(object):
                     new_value = dateutil.parser.parse(data[fieldname])
                     new_value = new_value.replace(tzinfo=None)
                 if current != new_value:
-                    logger.debug('{0} - changing attr from {1} to {2}'.format(
-                        fieldname, current, data[fieldname]))
+                    message = '{0} - changing attr from {1} to {2}'
+                    logger.debug(message.format(fieldname, current, data[fieldname]))
                     setattr(self, fieldname, data[fieldname])
 
     @classmethod
     def admin_deserialize(cls, data):
         item_id = data.get('id', None)
         if item_id is not None:
-            item = store.session.query(cls).filter(cls.id==data['id']).first()
+            item = store.session.query(cls).filter(cls.id == data['id']).first()
             if item is not None:
                 item.admin_deserialize_update(data)
         else:
@@ -160,7 +163,7 @@ class Serializable(object):
                         if args[key]:
                             new_arg = getattr(getattr(cls, bits[0]), bits[1])(args[key])
                             filter_args.append(new_arg)
-                    elif bits[1] in ('in',):
+                    elif bits[1] in ('in', ):
                         if args.getlist(key):
                             new_arg = getattr(cls, bits[0]).in_(args.getlist(key))
                             filter_args.append(new_arg)

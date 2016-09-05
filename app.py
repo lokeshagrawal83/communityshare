@@ -15,6 +15,7 @@ from community_share.routes.statistics_routes import register_statistics_routes
 
 logger = logging.getLogger(__name__)
 
+
 def make_app():
     webpack = Webpack()
     app = Flask(__name__, template_folder='static/')
@@ -64,6 +65,7 @@ def make_app():
         return render_template('index.html', config=config)
 
     return app
+
 
 if __name__ == '__main__':
     logger.info('Loading settings from environment')

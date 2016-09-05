@@ -19,15 +19,16 @@ subject: {email.subject}
 content: {email.content}
 '''
 
+
 def verify_email(api_key, token, timestamp, signature):
     return signature == hmac.new(
         key=bytearray(api_key, 'utf8'),
         msg=bytearray('{}{}'.format(timestamp, token), 'utf8'),
-        digestmod=hashlib.sha256).hexdigest()
+        digestmod=hashlib.sha256,
+    ).hexdigest()
 
 
 class Email(object):
-
     def __init__(self, from_address, to_address, subject, content, new_content):
         self.from_address = from_address
         self.to_address = to_address
@@ -42,8 +43,13 @@ class Email(object):
         lines = self.content.splitlines()
         new_lines += ['>' + line for line in lines]
         combined_content = '\n'.join(new_lines)
-        new_email = Email(new_from_address, new_to_address, self.subject,
-                          combined_content, new_content)
+        new_email = Email(
+            new_from_address,
+            new_to_address,
+            self.subject,
+            combined_content,
+            new_content,
+        )
         return new_email
 
     def make_mailgun_data(self):
@@ -86,18 +92,23 @@ class Email(object):
             links = match.groups()
         return links
 
+
 class QueueMailer(object):
     def __init__(self):
         self.queue = []
+
     def send(self, email):
         self.queue.append(email)
+
     def pop(self):
         return self.queue.pop(0)
+
 
 class DummyMailer(object):
     def send(email):
         text = dummy_template.format(email=email)
         logger.info(text)
+
 
 class MailgunMailer(object):
     def send(email):
@@ -112,13 +123,12 @@ class MailgunMailer(object):
             }
             logger.info('Sending mail request to mailgun - {}'.format(payload))
             r = requests.post(
-                'https://api.mailgun.net/v2/{0}/messages'.format(
-                    config.MAILGUN_DOMAIN),
+                'https://api.mailgun.net/v2/{0}/messages'.format(config.MAILGUN_DOMAIN),
                 auth=('api', config.MAILGUN_API_KEY),
-                data=payload)
+                data=payload,
+            )
             if not r.ok:
-                logger.error('Mailgun API failed with message: {0}'.format(
-                    r.json()['message']))
+                logger.error('Mailgun API failed with message: {0}'.format(r.json()['message']))
                 error_message = 'Server failed to connect to email service.'
             text = dummy_template.format(email=email)
             logger.debug(text)
@@ -127,11 +137,13 @@ class MailgunMailer(object):
             logger.info(text)
         return error_message
 
+
 mailer_type_to_mail = {
     'DUMMY': DummyMailer,
     'MAILGUN': MailgunMailer,
     'QUEUE': QueueMailer(),
 }
+
 
 def get_mailer():
     mailer = mailer_type_to_mail[config.MAILER_TYPE]

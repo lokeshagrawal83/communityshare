@@ -10,27 +10,64 @@ from community_share.models.base import Serializable
 
 logger = logging.getLogger(__name__)
 
-search_label_table = Table('search_label', Base.metadata,
+search_label_table = Table(
+    'search_label',
+    Base.metadata,
     Column('search_id', Integer, ForeignKey('search.id')),
-    Column('label_id', Integer, ForeignKey('label.id'))
+    Column('label_id', Integer, ForeignKey('label.id')),
 )
+
 
 class Search(Base, Serializable):
     __tablename__ = 'search'
 
     MANDATORY_FIELDS = [
-        'searcher_user_id', 'searcher_role', 'searching_for_role', 'labels', 'zipcode']
+        'searcher_user_id',
+        'searcher_role',
+        'searching_for_role',
+        'labels',
+        'zipcode',
+    ]
     WRITEABLE_FIELDS = [
-        'searcher_user_id', 'searcher_role', 'searching_for_role', 'labels',
-        'active', 'latitude', 'longitude', 'address', 'distance', 'zipcode']
+        'searcher_user_id',
+        'searcher_role',
+        'searching_for_role',
+        'labels',
+        'active',
+        'latitude',
+        'longitude',
+        'address',
+        'distance',
+        'zipcode',
+    ]
     STANDARD_READABLE_FIELDS = [
-        'id', 'searcher_user_id', 'searcher_role', 'searching_for_role',
-        'labels', 'longitude', 'latitude', 'address', 'zipcode', 'distance',
-        'searcher_user',]
+        'id',
+        'searcher_user_id',
+        'searcher_role',
+        'searching_for_role',
+        'labels',
+        'longitude',
+        'latitude',
+        'address',
+        'zipcode',
+        'distance',
+        'searcher_user',
+    ]
     ADMIN_READABLE_FIELDS = [
-        'id', 'searcher_user_id', 'searcher_role', 'searching_for_role', 'labels',
-        'created', 'active', 'longitude', 'latitude', 'address', 'zipcode', 'distance',
-        'searcher_user',]
+        'id',
+        'searcher_user_id',
+        'searcher_role',
+        'searching_for_role',
+        'labels',
+        'created',
+        'active',
+        'longitude',
+        'latitude',
+        'address',
+        'zipcode',
+        'distance',
+        'searcher_user',
+    ]
 
     PERMISSIONS = {
         'all_can_read_many': False,
@@ -79,6 +116,7 @@ class Search(Base, Serializable):
 
     def serialize_labels(self, requester):
         return [l.name for l in self.labels]
+
     def serialize_searcher_user(self, requester):
         return self.searcher_user.serialize(requester)
 
@@ -93,9 +131,7 @@ class Search(Base, Serializable):
         logger.debug('labelnames is {0}'.format(labelnames))
         self.labels = Label.name_list_to_object_list(labelnames)
 
-    custom_deserializers = {
-        'labels': deserialize_labels,
-        }
+    custom_deserializers = {'labels': deserialize_labels}
 
 
 class Label(Base, Serializable):

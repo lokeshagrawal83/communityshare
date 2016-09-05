@@ -21,7 +21,7 @@ sample_userA = {
     'institution_associations': [],
     'name': 'Charles',
     'bio': 'I am Charles.',
-    'zipcode' :'12345',
+    'zipcode': '12345',
     'email': "charlies@example.com",
     'password': 'booooooo'
 }
@@ -30,7 +30,7 @@ sample_userB = {
     'institution_associations': [],
     'name': 'Rob',
     'bio': 'I am Rob.',
-    'zipcode' :'12345',
+    'zipcode': '12345',
     'email': "rob@example.com",
     'password': 'oiuh298n[;w',
 }
@@ -39,17 +39,19 @@ sample_userC = {
     'institution_associations': [],
     'name': 'Charlie',
     'bio': 'AAAAAAAAAAAAAhhhhhhhhhhh!!!!',
-    'zipcode' :'12345',
+    'zipcode': '12345',
     'email': "charlie@example.com",
     'password': 'oiuh298n[;wbosijdfkow',
 }
 
+
 def chop_link(link):
     start = config.BASEURL
-    assert(link.startswith(start))
+    assert (link.startswith(start))
     chopped_link = link[len(start):]
     chopped_link = chopped_link.split('#')[0]
     return chopped_link
+
 
 def make_headers(api_key=None, email=None, password=None):
     headers = [('Content-Type', 'application/json')]
@@ -63,8 +65,9 @@ def make_headers(api_key=None, email=None, password=None):
         headers.append(('Authorization', authorization_header))
     return headers
 
+
 class CommunityShareTestCase(unittest.TestCase):
-    
+
     SQLLITE_FILE = '/tmp/test.db'
 
     def setUp(self):
@@ -86,7 +89,7 @@ class CommunityShareTestCase(unittest.TestCase):
         data = {
             'password': user_data['password'],
             'user': user_data,
-            }
+        }
         serialized = json.dumps(data)
         headers = [('Content-Type', 'application/json')]
         rv = self.app.post('/api/usersignup', data=serialized, headers=headers)
@@ -103,11 +106,13 @@ class CommunityShareTestCase(unittest.TestCase):
         data = json.loads(rv.data.decode('utf8'))
 
         # User details should match
-        relevant_keys = user_data.keys() - { 'password' }
+        # yapf: disable
+        relevant_keys = user_data.keys() - {'password'}
         self.assertDictEqual(
-            { k: v for k, v in user_data.items() if k in relevant_keys },
-            { k: v for k, v in data['data'].items() if k in relevant_keys }
+            {k: v for k, v in user_data.items() if k in relevant_keys},
+            {k: v for k, v in data['data'].items() if k in relevant_keys}
         )
+        # yapf: enable
 
         mailer = mail.get_mailer()
         # We should have one email in queue (email confimation from signup)
@@ -122,13 +127,10 @@ class CommunityShareTestCase(unittest.TestCase):
         # Confirm email for new user
         headers = [('Content-Type', 'application/json')]
         data = json.dumps({'key': key})
-        rv = self.app.post('/api/confirmemail', data=data,
-                           headers=headers)
+        rv = self.app.post('/api/confirmemail', data=data, headers=headers)
         self.assertEqual(rv.status_code, 200)
-        
 
-    def save_search(self, user_id, headers,
-                    searcher_role, searching_for_role, labels):
+    def save_search(self, user_id, headers, searcher_role, searching_for_role, labels):
         data = {
             'searcher_user_id': user_id,
             'searcher_role': searcher_role,
@@ -151,21 +153,28 @@ class CommunityShareTestCase(unittest.TestCase):
         }
         serialized = json.dumps(message_data)
         headers = make_headers(api_key)
-        rv = self.app.post(
-            '/api/message', headers=headers, data=serialized)
+        rv = self.app.post('/api/message', headers=headers, data=serialized)
         self.assertEqual(rv.status_code, 200)
         return rv
 
     def create_searches(self, user_ids, user_headers):
         # userA creates a search of educator for partner
         searchA_id = self.save_search(
-            user_ids['userA'], user_headers['userA'], 'educator', 'partner',
-            ['robot dogs', 'walks on the beach'])
+            user_ids['userA'],
+            user_headers['userA'],
+            'educator',
+            'partner',
+            ['robot dogs', 'walks on the beach'],
+        )
         self.assertGreaterEqual(searchA_id, 0)
         # userB creates a search of partner to educator
         searchB_id = self.save_search(
-            user_ids['userB'], user_headers['userB'], 'partner', 'educator',
-            ['robot dogs', 'walks on the beach'])
+            user_ids['userB'],
+            user_headers['userB'],
+            'partner',
+            'educator',
+            ['robot dogs', 'walks on the beach'],
+        )
         self.assertGreaterEqual(searchB_id, 0)
         return (searchA_id, searchB_id)
 
@@ -187,8 +196,7 @@ class CommunityShareTestCase(unittest.TestCase):
             'userB_id': userB_id,
         }
         serialized = json.dumps(conversation_data)
-        rv = self.app.post(
-            '/api/conversation', headers=headers, data=serialized)
+        rv = self.app.post('/api/conversation', headers=headers, data=serialized)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode('utf8'))['data']
         return data
@@ -198,21 +206,25 @@ class CommunityShareTestCase(unittest.TestCase):
     class FakeDateTime():
         def utcnow():
             logger.debug('Getting fake utcnow')
-            fake_time =  datetime.datetime.utcnow() - datetime.timedelta(
-                hours=CommunityShareTestCase.FAKE_TIME_SHIFT)
-            logger.debug('shift is {} fake now is {}'.format(
-                CommunityShareTestCase.FAKE_TIME_SHIFT, fake_time))
+            shift_in_hours = CommunityShareTestCase.FAKE_TIME_SHIFT
+            fake_time = datetime.datetime.utcnow() - datetime.timedelta(hours=shift_in_hours, )
+            logger.debug('shift is {} fake now is {}'.format(shift_in_hours, fake_time))
             return fake_time
 
     @mock.patch('community_share.models.share.datetime', FakeDateTime)
     def make_share(
-            self, headers, conversation_id,
-            educator_user_id, community_partner_user_id,
+            self,
+            headers,
+            conversation_id,
+            educator_user_id,
+            community_partner_user_id,
             starting_in_hours=24,
-            location='Somewhere', duration=1,
+            location='Somewhere',
+            duration=1,
             title='Trip to moon',
             description='Is the moon made of Cheese?',
-            force_past_events=False):
+            force_past_events=False,
+    ):
         if force_past_events:
             CommunityShareTestCase.FAKE_TIME_SHIFT = 1000
         else:
@@ -227,14 +239,15 @@ class CommunityShareTestCase(unittest.TestCase):
             'educator_user_id': educator_user_id,
             'community_partner_user_id': community_partner_user_id,
             'events': [
-                {'location': location,
-                 'datetime_start': time_format.to_iso8601(starting),
-                 'datetime_stop': time_format.to_iso8601(ending),},
+                {
+                    'location': location,
+                    'datetime_start': time_format.to_iso8601(starting),
+                    'datetime_stop': time_format.to_iso8601(ending),
+                },
             ]
         }
         serialized = json.dumps(share_data)
-        rv = self.app.post(
-            '/api/share', headers=headers, data=serialized)
+        rv = self.app.post('/api/share', headers=headers, data=serialized)
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode('utf8'))['data']
         return data
@@ -246,18 +259,15 @@ class CommunityShareTestCase(unittest.TestCase):
         }
         user_ids, user_headers = self.create_users(user_datas)
         # userA is not an administrator so we should get forbidden.
-        rv = self.app.get(
-            '/api/statistics', headers=user_headers['userA'])
+        rv = self.app.get('/api/statistics', headers=user_headers['userA'])
         self.assertEqual(rv.status_code, 403)
         # Make userA an administrator
-        userA = store.session.query(User).filter(
-            User.id==user_ids['userA']).first()
+        userA = store.session.query(User).filter(User.id == user_ids['userA']).first()
         userA.is_administrator = True
         store.session.add(userA)
         store.session.commit()
         # Now we should get stats
-        rv = self.app.get(
-            '/api/statistics', headers=user_headers['userA'])
+        rv = self.app.get('/api/statistics', headers=user_headers['userA'])
         self.assertEqual(rv.status_code, 200)
         stats = json.loads(rv.data.decode('utf8'))['data']
         yesterday = datetime.datetime.utcnow().date() - datetime.timedelta(days=1)
@@ -270,8 +280,7 @@ class CommunityShareTestCase(unittest.TestCase):
         # Add force recalculation of statistics
         Statistic.update_statistics(yesterday, force=True)
         # We should get stats and see one new user yesterday.
-        rv = self.app.get(
-            '/api/statistics', headers=user_headers['userA'])
+        rv = self.app.get('/api/statistics', headers=user_headers['userA'])
         self.assertEqual(rv.status_code, 200)
         stats = json.loads(rv.data.decode('utf8'))['data']
         self.assertEqual(stats[yesterday_string]['n_new_users'], 1)
@@ -280,26 +289,33 @@ class CommunityShareTestCase(unittest.TestCase):
         # Now lets make a conversation and event
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
         conversation_data = self.make_conversation(
-            user_headers['userA'], search_id=searchA_id, title='Trip to moon.',
-            userA_id=user_ids['userA'], userB_id=user_ids['userB'])
+            user_headers['userA'],
+            search_id=searchA_id,
+            title='Trip to moon.',
+            userA_id=user_ids['userA'],
+            userB_id=user_ids['userB'],
+        )
         conversation_id = conversation_data['id']
         share_data = self.make_share(
-            user_headers['userA'], conversation_id,
+            user_headers['userA'],
+            conversation_id,
             educator_user_id=user_ids['userA'],
             community_partner_user_id=user_ids['userB'],
-            starting_in_hours=-20, force_past_events=True)
+            starting_in_hours=-20,
+            force_past_events=True,
+        )
         share_id = share_data['id']
         eventA_id = share_data['events'][0]['id']
         # Pretend conversation was created yesterday.
-        conversation = store.session.query(Conversation).filter(
-            Conversation.id==conversation_id).first()
+        conversation = store.session.query(Conversation)
+        conversation = conversation.filter(Conversation.id == conversation_id)
+        conversation = conversation.first()
         conversation.date_created -= datetime.timedelta(hours=24)
         store.session.add(conversation)
         store.session.commit()
         # Stats should be appropriately changed.
         Statistic.update_statistics(yesterday, force=True)
-        rv = self.app.get(
-            '/api/statistics', headers=user_headers['userA'])
+        rv = self.app.get('/api/statistics', headers=user_headers['userA'])
         self.assertEqual(rv.status_code, 200)
         stats = json.loads(rv.data.decode('utf8'))['data']
         self.assertEqual(stats[yesterday_string]['n_new_users'], 1)
@@ -309,8 +325,7 @@ class CommunityShareTestCase(unittest.TestCase):
 
         # Make sure check_statistics doesn't break
         Statistic.check_statistics()
-        rv = self.app.get(
-            '/api/statistics', headers=user_headers['userA'])
+        rv = self.app.get('/api/statistics', headers=user_headers['userA'])
         self.assertEqual(rv.status_code, 200)
         stats = json.loads(rv.data.decode('utf8'))['data']
         self.assertEqual(len(stats.keys()), 30)
@@ -323,20 +338,28 @@ class CommunityShareTestCase(unittest.TestCase):
         user_ids, user_headers = self.create_users(user_datas)
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
         conversation_data = self.make_conversation(
-            user_headers['userA'], search_id=searchA_id, title='Trip to moon.',
-            userA_id=user_ids['userA'], userB_id=user_ids['userB'])
+            user_headers['userA'],
+            search_id=searchA_id,
+            title='Trip to moon.',
+            userA_id=user_ids['userA'],
+            userB_id=user_ids['userB'],
+        )
         conversation_id = conversation_data['id']
         share_data = self.make_share(
-            user_headers['userA'], conversation_id,
+            user_headers['userA'],
+            conversation_id,
             educator_user_id=user_ids['userA'],
             community_partner_user_id=user_ids['userB'],
-            starting_in_hours=0.5)
+            starting_in_hours=0.5,
+        )
         mailer = mail.get_mailer()
         while mailer.queue:
             mailer.pop()
         # userB is deleting their account
         rv = self.app.delete(
-            '/api/user/{0}'.format(user_ids['userB']), headers=user_headers['userB'])
+            '/api/user/{0}'.format(user_ids['userB']),
+            headers=user_headers['userB'],
+        )
         self.assertEqual(rv.status_code, 200)
         # Emails should have been sent to userB (confirming deletion)
         # and UserA since they had an event scheduled.
@@ -365,21 +388,26 @@ class CommunityShareTestCase(unittest.TestCase):
         user_ids, user_headers = self.create_users(user_datas)
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
         conversation_data = self.make_conversation(
-            user_headers['userA'], search_id=searchA_id, title='Trip to moon.',
-            userA_id=user_ids['userA'], userB_id=user_ids['userB'])
+            user_headers['userA'],
+            search_id=searchA_id,
+            title='Trip to moon.',
+            userA_id=user_ids['userA'],
+            userB_id=user_ids['userB'],
+        )
         conversation_id = conversation_data['id']
         share_data = self.make_share(
-            user_headers['userA'], conversation_id,
+            user_headers['userA'],
+            conversation_id,
             educator_user_id=user_ids['userA'],
             community_partner_user_id=user_ids['userB'],
-            starting_in_hours=0.5)
+            starting_in_hours=0.5,
+        )
         mailer = mail.get_mailer()
         while mailer.queue:
             mailer.pop()
         events = EventReminder.get_oneday_reminder_events()
         self.assertEqual(len(events), 1)
-        worker.work_loop(target_time_between_calls=datetime.timedelta(seconds=1),
-                         max_loops=2)
+        worker.work_loop(target_time_between_calls=datetime.timedelta(seconds=1), max_loops=2)
         events = EventReminder.get_oneday_reminder_events()
         self.assertEqual(len(events), 0)
         # Two reminder emails should have been sent.
@@ -401,22 +429,27 @@ class CommunityShareTestCase(unittest.TestCase):
         user_headers['noone'] = make_headers()
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
         conversation_data = self.make_conversation(
-            user_headers['userA'], search_id=searchA_id, title='Trip to moon.',
-            userA_id=user_ids['userA'], userB_id=user_ids['userB'])
+            user_headers['userA'],
+            search_id=searchA_id,
+            title='Trip to moon.',
+            userA_id=user_ids['userA'],
+            userB_id=user_ids['userB'],
+        )
         conversation_id = conversation_data['id']
         # userA creates a share
         share_data = self.make_share(
-            user_headers['userA'], conversation_id,
+            user_headers['userA'],
+            conversation_id,
             educator_user_id=user_ids['userA'],
-            community_partner_user_id=user_ids['userB'])
+            community_partner_user_id=user_ids['userB'],
+        )
         share_id = share_data['id']
         self.assertEqual(len(share_data['events']), 1)
         # This should send an email to userB that a share has been created.
         # This also sends an email to the "notify" address.
         mailer = mail.get_mailer()
         self.assertEqual(len(mailer.queue), 2)
-        email = [email for email in mailer.queue
-                if email.to_address == sample_userB['email']][0]
+        email = [email for email in mailer.queue if email.to_address == sample_userB['email']][0]
         mailer.queue.pop()
         mailer.queue.pop()
         self.assertEqual(email.to_address, sample_userB['email'])
@@ -428,17 +461,14 @@ class CommunityShareTestCase(unittest.TestCase):
         rv = self.app.get(chopped_link)
         self.assertEqual(rv.status_code, 200)
         # We should not be able to get this share if unauthenticated
-        rv = self.app.get(
-            '/api/share/{0}'.format(share_id), headers=user_headers['noone'])
+        rv = self.app.get('/api/share/{0}'.format(share_id), headers=user_headers['noone'])
         self.assertEqual(rv.status_code, 401)
         # Logged on users can access share info
         # FIXME: Need to check if this should be more private.
-        rv = self.app.get(
-            '/api/share/{0}'.format(share_id), headers=user_headers['userC'])
+        rv = self.app.get('/api/share/{0}'.format(share_id), headers=user_headers['userC'])
         self.assertEqual(rv.status_code, 200)
         # User B should be able to access it.
-        rv = self.app.get(
-            '/api/share/{0}'.format(share_id), headers=user_headers['userB'])
+        rv = self.app.get('/api/share/{0}'.format(share_id), headers=user_headers['userB'])
         self.assertEqual(rv.status_code, 200)
         share_data = json.loads(rv.data.decode('utf8'))['data']
         self.assertEqual(share_data['id'], share_id)
@@ -451,15 +481,24 @@ class CommunityShareTestCase(unittest.TestCase):
         serialized = json.dumps(share_data)
         # Unauthenticated person should not be able to edit it.
         rv = self.app.put(
-            '/api/share/{0}'.format(share_id), headers=user_headers['noone'], data=serialized)
+            '/api/share/{0}'.format(share_id),
+            headers=user_headers['noone'],
+            data=serialized,
+        )
         self.assertEqual(rv.status_code, 401)
         # User C should not be able to edit it.
         rv = self.app.put(
-            '/api/share/{0}'.format(share_id), headers=user_headers['userC'], data=serialized)
+            '/api/share/{0}'.format(share_id),
+            headers=user_headers['userC'],
+            data=serialized,
+        )
         self.assertEqual(rv.status_code, 403)
         # User B should be able to edit it.
         rv = self.app.put(
-            '/api/share/{0}'.format(share_id), headers=user_headers['userB'], data=serialized)
+            '/api/share/{0}'.format(share_id),
+            headers=user_headers['userB'],
+            data=serialized,
+        )
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode('utf8'))['data']
         # There should still be one event there.
@@ -476,13 +515,18 @@ class CommunityShareTestCase(unittest.TestCase):
         starting = now + datetime.timedelta(hours=3)
         ending = now + datetime.timedelta(hours=4)
         data['events'].append(
-            {'location': 'Somewhere Else',
-             'datetime_start': time_format.to_iso8601(starting),
-             'datetime_stop': time_format.to_iso8601(ending),}
+            {
+                'location': 'Somewhere Else',
+                'datetime_start': time_format.to_iso8601(starting),
+                'datetime_stop': time_format.to_iso8601(ending),
+            }
         )
         serialized = json.dumps(data)
         rv = self.app.put(
-            '/api/share/{0}'.format(share_id), headers=user_headers['userB'], data=serialized)
+            '/api/share/{0}'.format(share_id),
+            headers=user_headers['userB'],
+            data=serialized,
+        )
         data = json.loads(rv.data.decode('utf8'))['data']
         ids = set([e['id'] for e in data['events']])
         self.assertIn(event_id, ids)
@@ -499,7 +543,10 @@ class CommunityShareTestCase(unittest.TestCase):
         # User A can do a put with no changes to approve.
         serialized = json.dumps(data)
         rv = self.app.put(
-            '/api/share/{0}'.format(share_id), headers=user_headers['userA'], data=serialized)
+            '/api/share/{0}'.format(share_id),
+            headers=user_headers['userA'],
+            data=serialized,
+        )
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode('utf8'))['data']
         self.assertTrue(data['educator_approved'])
@@ -510,12 +557,13 @@ class CommunityShareTestCase(unittest.TestCase):
         email = mailer.pop()
         self.assertEqual(email.to_address, sample_userB['email'])
         # Now userB deletes the events
-        share_data = {
-            'events': []
-        }
+        share_data = {'events': []}
         serialized = json.dumps(share_data)
         rv = self.app.put(
-            '/api/share/{0}'.format(share_id), headers=user_headers['userB'], data=serialized)
+            '/api/share/{0}'.format(share_id),
+            headers=user_headers['userB'],
+            data=serialized,
+        )
         self.assertEqual(rv.status_code, 200)
         data = json.loads(rv.data.decode('utf8'))['data']
         self.assertEqual(len(data['events']), 0)
@@ -525,8 +573,7 @@ class CommunityShareTestCase(unittest.TestCase):
         email = mailer.pop()
         self.assertEqual(email.to_address, sample_userA['email'])
         # UserA cancels the share
-        rv = self.app.delete(
-            'api/share/{0}'.format(share_id), headers=user_headers['userA'])
+        rv = self.app.delete('api/share/{0}'.format(share_id), headers=user_headers['userA'])
         self.assertEqual(rv.status_code, 200)
         # User B should have received an email.
         mailer = mail.get_mailer()
@@ -538,8 +585,7 @@ class CommunityShareTestCase(unittest.TestCase):
         # Signup userA
         userA_id, userA_api_key, userA_email_key = self.sign_up(sample_userA)
         self.confirm_email(userA_email_key)
-        rv = self.app.get('/api/requestresetpassword/{0}'.format(
-            sample_userA['email']))
+        rv = self.app.get('/api/requestresetpassword/{0}'.format(sample_userA['email']))
         self.assertEqual(rv.status_code, 200)
         mailer = mail.get_mailer()
         # Check that we can authenticate with email and password
@@ -558,8 +604,10 @@ class CommunityShareTestCase(unittest.TestCase):
         headers = make_headers()
         rv = self.app.post(
             '/api/resetpassword',
-            data=json.dumps({'key': email_key, 'password': new_password}),
-            headers=headers)
+            data=json.dumps({'key': email_key,
+                             'password': new_password, }),
+            headers=headers
+        )
         self.assertEqual(rv.status_code, 200)
         # Check that we can't authenticate with email and old password
         headers = make_headers(email=sample_userA['email'], password=sample_userA['password'])
@@ -581,16 +629,15 @@ class CommunityShareTestCase(unittest.TestCase):
             'userA': userA_headers,
             'userB': userB_headers,
         }
-        user_ids = {
-            'userA': userA_id,
-            'userB': userB_id
-        }
+        user_ids = {'userA': userA_id, 'userB': userB_id}
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
         # Now userB will confirm their email.
         self.confirm_email(userB_email_key)
         # So that they should appear in userA's search.
-        rv = self.app.get('/api/search/{0}/0/results'.format(searchA_id),
-                          headers=user_headers['userA'])
+        rv = self.app.get(
+            '/api/search/{0}/0/results'.format(searchA_id),
+            headers=user_headers['userA'],
+        )
         data = json.loads(rv.data.decode('utf8'))
         searches = data['data']
         self.assertEqual(len(searches), 1)
@@ -604,8 +651,7 @@ class CommunityShareTestCase(unittest.TestCase):
         }
         serialized = json.dumps(conversation_data)
         # And save the conversation
-        rv = self.app.post(
-            '/api/conversation', headers=user_headers['userA'], data=serialized)
+        rv = self.app.post('/api/conversation', headers=user_headers['userA'], data=serialized)
         self.assertEqual(rv.status_code, 200)
 
     def test_one(self):
@@ -639,14 +685,13 @@ class CommunityShareTestCase(unittest.TestCase):
             'userA': userA_headers,
             'userB': userB_headers,
         }
-        user_ids = {
-            'userA': userA_id,
-            'userB': userB_id
-        }        
+        user_ids = {'userA': userA_id, 'userB': userB_id}
         searchA_id, searchB_id = self.create_searches(user_ids, user_headers)
         # Get all the results for userA's search
-        rv = self.app.get('/api/search/{0}/0/results'.format(searchA_id),
-                          headers=user_headers['userA'])
+        rv = self.app.get(
+            '/api/search/{0}/0/results'.format(searchA_id),
+            headers=user_headers['userA'],
+        )
         data = json.loads(rv.data.decode('utf8'))
         searches = data['data']
         self.assertEqual(len(searches), 1)
@@ -654,8 +699,12 @@ class CommunityShareTestCase(unittest.TestCase):
         # Now userA starts a conversation with userB
         conversation_title = 'Trip to moon.'
         conversation_data = self.make_conversation(
-            user_headers['userA'], search_id=searchA_id, title=conversation_title,
-            userA_id=user_ids['userA'], userB_id=user_ids['userB'])
+            user_headers['userA'],
+            search_id=searchA_id,
+            title=conversation_title,
+            userA_id=user_ids['userA'],
+            userB_id=user_ids['userB'],
+        )
         conversation_id = conversation_data['id']
         # And send the first message
         message_content = 'Are you interested in going to the moon?'
@@ -663,7 +712,8 @@ class CommunityShareTestCase(unittest.TestCase):
             conversation_id=conversation_id,
             sender_user_id=userA_id,
             content=message_content,
-            api_key=userA_api_key)
+            api_key=userA_api_key,
+        )
         data = json.loads(rv.data.decode('utf8'))
         message_id = data['data']['id']
         mailer = mail.get_mailer()
@@ -688,8 +738,7 @@ class CommunityShareTestCase(unittest.TestCase):
         self.assertEqual(rv.status_code, 200)
         # Send the reply email to our email API in the form of a Mailgun
         # request.
-        rv = self.app.post(
-            '/api/email', data=reply_email.make_mailgun_data())
+        rv = self.app.post('/api/email', data=reply_email.make_mailgun_data())
         self.assertEqual(rv.status_code, 200)
         # It should have been forwarded to the other user.
         self.assertEqual(len(mailer.queue), 1)
@@ -701,7 +750,8 @@ class CommunityShareTestCase(unittest.TestCase):
         # We'll hit the conversation API to confirm this.
         rv = self.app.get(
             '/api/conversation/{0}'.format(conversation_id),
-            headers=user_headers['userA'])
+            headers=user_headers['userA'],
+        )
         rcvd_conversation_data = json.loads(rv.data.decode('utf8'))['data']
         self.assertEqual(rcvd_conversation_data['id'], conversation_id)
         self.assertEqual(rcvd_conversation_data['title'], conversation_title)
@@ -714,12 +764,11 @@ class CommunityShareTestCase(unittest.TestCase):
 
         # To do:
         # Make sure that conversation link works in email
-        
+
     def tearDown(self):
         #os.rmdir(self.SQLLITE_FILE)
         pass
 
+
 if __name__ == '__main__':
     unittest.main()
-    
-        

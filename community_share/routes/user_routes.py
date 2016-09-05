@@ -15,6 +15,7 @@ from community_share.picture_utils import image_to_user_filename, is_allowable_i
 
 logger = logging.getLogger(__name__)
 
+
 def register_user_routes(app):
 
     user_blueprint = base_routes.make_blueprint(User, 'user')
@@ -33,14 +34,15 @@ def register_user_routes(app):
         email = user.get('email', '')
         password = data.get('password', None)
         # Check that the email isn't in use.
-        existing_user = store.session.query(User).filter(
-            User.email==email, User.active==True).first()
+        existing_user = store.session.query(User)
+        existing_user = existing_user.filter(User.email == email, User.active == True)
+        existing_user = existing_user.first()
         if existing_user is not None:
             response = base_routes.make_bad_request_response(
-                'That email address is already associated with an account.')
+                'That email address is already associated with an account.',
+            )
         elif password is None:
-            response = base_routes.make_bad_request_response(
-                'A password was not specified.');
+            response = base_routes.make_bad_request_response('A password was not specified.')
         else:
             try:
                 user = User.admin_deserialize_add(user)
@@ -54,10 +56,11 @@ def register_user_routes(app):
                     error_message = mail_actions.request_signup_email_confirmation(user)
                     secret = user.make_api_key()
                     serialized = user.serialize(user)
+                    warning_message = 'Failed to send email confirmation: {0}'.format(error_message)
                     response_data = {
                         'data': serialized,
                         'apiKey': secret.key,
-                        'warningMessage': 'Failed to send email confirmation: {0}'.format(error_message)
+                        'warningMessage': warning_message,
                     }
                 response = jsonify(response_data)
             except ValidationException as e:
@@ -72,8 +75,7 @@ def register_user_routes(app):
         elif requester.email != email:
             response = base_routes.make_forbidden_response()
         else:
-            users = store.session.query(User).filter(
-                User.email==email, User.active==True).all()
+            users = store.session.query(User).filter(User.email == email, User.active == True).all()
             if len(users) > 1:
                 logger.error('More than one active user with the same email - {}'.format(email))
                 user = users[0]
@@ -89,7 +91,7 @@ def register_user_routes(app):
 
     @app.route('/api/requestresetpassword/<string:email>', methods=['GET'])
     def request_reset_password(email):
-        user = store.session.query(User).filter_by(email=email,active=True).first()
+        user = store.session.query(User).filter_by(email=email, active=True).first()
         if user is None:
             response = base_routes.make_not_found_response()
         else:
@@ -107,9 +109,7 @@ def register_user_routes(app):
             response = base_routes.make_not_authorized_response()
         else:
             secret = requester.make_api_key()
-            response_data = {
-                'apiKey': secret.key
-            }
+            response_data = {'apiKey': secret.key}
             response = jsonify(response_data)
         return response
 
@@ -120,10 +120,12 @@ def register_user_routes(app):
         password = data.get('password', '')
         if key == '':
             response = base_routes.make_bad_request_response(
-                'Did not receive a key with password reset request.')
+                'Did not receive a key with password reset request.',
+            )
         elif password == '':
             response = base_routes.make_bad_request_response(
-                'Received password to reset to was blank.')
+                'Received password to reset to was blank.',
+            )
         else:
             user, error_messages = mail_actions.process_password_reset(key, password)
             if error_messages:
@@ -154,7 +156,8 @@ def register_user_routes(app):
         key = data.get('key', '')
         if key == '':
             response = base_routes.make_bad_request_response(
-                'Did not receive a key with email confirmation.')
+                'Did not receive a key with email confirmation.',
+            )
         else:
             user, error_messages = mail_actions.process_confirm_email(key)
             if error_messages:
@@ -171,8 +174,6 @@ def register_user_routes(app):
                 }
                 response = jsonify(response_data)
         return response
-
-
 
     @app.route('/api/usersearch', methods=['GET'])
     def search():

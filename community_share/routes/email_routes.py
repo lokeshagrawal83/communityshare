@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 def register_email_routes(app):
-
     @app.route('/api/email', methods=['POST'])
     def receive_email():
 
@@ -39,21 +38,21 @@ def register_email_routes(app):
             new_message = Message(
                 conversation_id=message.conversation_id,
                 sender_user_id=message.receiver_user().id,
-                content=email.new_content)
+                content=email.new_content,
+            )
             store.session.add(new_message)
             store.session.commit()
             # Create an email to send to the recipient
             forward_to_address = message.sender_user.email
             forward_from_address = new_message.generate_from_address()
-            forward_content = append_conversation_link(
-                email.content, message.conversation)
-            forward_new_content = append_conversation_link(
-                email.new_content, message.conversation)
-            forward_email = Email(from_address=forward_from_address,
-                                  to_address=forward_to_address,
-                                  subject=email.subject,
-                                  content=forward_content,
-                                  new_content=forward_new_content,
+            forward_content = append_conversation_link(email.content, message.conversation)
+            forward_new_content = append_conversation_link(email.new_content, message.conversation)
+            forward_email = Email(
+                from_address=forward_from_address,
+                to_address=forward_to_address,
+                subject=email.subject,
+                content=forward_content,
+                new_content=forward_new_content,
             )
             error_message = get_mailer().send(forward_email)
         response = base_routes.make_OK_response()

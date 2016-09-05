@@ -4,11 +4,7 @@ from community_share import config
 
 
 def save_file_to_s3(src_filename, dst_filename):
-    conn = tinys3.Connection(
-        config.S3_USERNAME,
-        config.S3_KEY,
-        tls=True
-    )
+    conn = tinys3.Connection(config.S3_USERNAME, config.S3_KEY, tls=True)
 
     conn.upload(
         dst_filename,

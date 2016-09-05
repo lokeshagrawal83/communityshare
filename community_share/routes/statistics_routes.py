@@ -9,6 +9,7 @@ from community_share import config, store, time_format
 from community_share.models.statistics import Statistic
 from community_share.routes import base_routes
 
+
 def get_new_user_statistics():
     '''
     number of new users each day
@@ -20,20 +21,15 @@ def get_new_user_statistics():
     '''
     now = datetime.datetime.utcnow()
     one_year_ago = now - datetime.timedelta(years=1)
-    last_year_new_users = store.session.query(User).filter(
-        User.date_created > one_year_ago).all()
-    
-    new_user_stats = {
-        'last year': {
-            'new number': len(last_year_new_users)
-        },
-    }
-    
+    last_year_new_users = store.session.query(User).filter(User.date_created > one_year_ago).all()
+
+    new_user_stats = {'last year': {'new number': len(last_year_new_users)}, }
+
 
 logger = logging.getLogger(__name__)
 
-def register_statistics_routes(app):
 
+def register_statistics_routes(app):
     @app.route('/api/statistics', methods=['GET'])
     def statistics():
         requester = get_requesting_user()

@@ -9,6 +9,7 @@ from community_share.models.base import Serializable, ValidationException
 
 logger = logging.getLogger(__name__)
 
+
 class InstitutionAssociation(Base, Serializable):
     __tablename__ = 'institution_association'
 
@@ -35,27 +36,24 @@ class InstitutionAssociation(Base, Serializable):
             self.institution = store.session.query(Institution).filter_by(name=name).first()
         if not self.institution:
             if len(name) > INSTITUTION_NAME_LENGTH:
-                raise ValidationException('Institution name must be less than {} characters.'.format(INSTITUTION_NAME_LENGTH))
+                error_message = 'Institution name must be less than {} characters.'
+                raise ValidationException(error_message.format(INSTITUTION_NAME_LENGTH))
             else:
                 self.institution = Institution.admin_deserialize_add(data)
         else:
             self.institution.institution_type = institution_type
-            
 
     def serialize_institution(self, requester):
         return self.institution.serialize(requester)
 
-    custom_deserializers = {
-        'institution': deserialize_institution,
-        }
+    custom_deserializers = {'institution': deserialize_institution}
 
-    custom_serializers = {
-        'institution': serialize_institution
-    }
+    custom_serializers = {'institution': serialize_institution}
 
 
-INSTITUTION_NAME_LENGTH = 50    
-        
+INSTITUTION_NAME_LENGTH = 50
+
+
 class Institution(Base, Serializable):
     __tablename__ = 'institution'
 
@@ -64,10 +62,7 @@ class Institution(Base, Serializable):
     STANDARD_READABLE_FIELDS = ['name', 'institution_type']
     ADMIN_READABLE_FIELDS = ['name', 'institution_type']
 
-    PERMISSIONS = {
-        'all_can_read_many': True,
-        'standard_can_read_many': True
-    }
+    PERMISSIONS = {'all_can_read_many': True, 'standard_can_read_many': True}
 
     id = Column(Integer, primary_key=True)
     name = Column(String(INSTITUTION_NAME_LENGTH), nullable=False, unique=True)

@@ -7,11 +7,14 @@ from community_share.models.user import User
 
 logger = logging.getLogger(__name__)
 
+
 class NotAuthorizedException(Exception):
     pass
 
+
 class ForbiddenException(Exception):
     pass
+
 
 def get_requesting_user():
     authorization = request.headers.get('Authorization', None)
@@ -33,4 +36,3 @@ def get_requesting_user():
         if not authorized_user.active:
             authorized_user = None
     return authorized_user
-

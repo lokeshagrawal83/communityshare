@@ -77,15 +77,30 @@ last_names = [
 
 labels = {
     'GradeLevels': [
-        'K-5', '6-8', '9-12', 'College', 'Adult',
+        'K-5',
+        '6-8',
+        '9-12',
+        'College',
+        'Adult',
     ],
     'SubjectAreas': [
-        'STEM', 'Arts',
-        'Science', 'Technology', 'Engineering', 'Math',
-        'Visual Arts', 'Digital Media', 'Film & Photography', 'Literature',
+        'STEM',
+        'Arts',
+        'Science',
+        'Technology',
+        'Engineering',
+        'Math',
+        'Visual Arts',
+        'Digital Media',
+        'Film & Photography',
+        'Literature',
         'Performing Arts',
-        'Social Studies', 'English/Language Arts', 'Foreign Languages', 'PE/Health/Sports',
-        'Mathematics', 'Goverment',
+        'Social Studies',
+        'English/Language Arts',
+        'Foreign Languages',
+        'PE/Health/Sports',
+        'Mathematics',
+        'Goverment',
     ],
     'LevelOfEngagement': [
         'Guest', 'Speaker', 'Field Trip Host', 'Student Competition Judge',
@@ -101,7 +116,6 @@ label_probabilities = [
     (skills, 0.3),
 ]
 
-
 profile_picture_filenames = [
     'aardvark.jpg',
     'ant.jpg',
@@ -115,10 +129,7 @@ profile_picture_filenames = [
     'sloth.jpg',
 ]
 
-school_infos = [
-    ('School Number 42', 'School'),
-    ('School Number 101', 'School')
-]
+school_infos = [('School Number 42', 'School'), ('School Number 101', 'School')]
 
 educator_roles = [
     'Classroom Teacher',
@@ -158,44 +169,53 @@ hobbies = [
     'french cooking',
     'watching reality TV',
     'training for marathons',
-    'juggling'
+    'juggling',
 ]
+
 
 def gen_email(first_name, last_name):
     return '{0}.{1}@example.com'.format(first_name, last_name)
 
+
 def gen_labels():
     return [
-        label
-        for label_set, probability in label_probabilities
-        for label in label_set
+        label for label_set, probability in label_probabilities for label in label_set
         if random.random() < probability
     ]
 
+
 def make_institutions(infos):
     return [
-        Institution(name=name,institution_type=institution_type)
-        for name, institution_type in infos
+        Institution(
+            name=name,
+            institution_type=institution_type,
+        ) for name, institution_type in infos
     ]
+
 
 companies = make_institutions(company_infos)
 schools = make_institutions(school_infos)
+
 
 def generate_expert_bio():
     specialty = random.choice(specialties)
     hobby = random.choice(hobbies)
     return "I specialize in the area of {0}.  My main hobby is {1}.".format(specialty, hobby)
 
+
 def generate_educator_bio():
-	bio = "My main hobby is {0}".format(random.choice(hobbies))
-	return bio
+    bio = "My main hobby is {0}".format(random.choice(hobbies))
+    return bio
+
 
 def make_random_location():
-    latitude = 32.223303 + (random.random()-0.5)+0.1
-    longitude = -110.970905 + (random.random()-0.5)+0.1
+    latitude = 32.223303 + (random.random() - 0.5) + 0.1
+    longitude = -110.970905 + (random.random() - 0.5) + 0.1
     return (latitude, longitude)
 
+
 user_names_used = set()
+
 
 def gen_new_name(existing_users, first_names, last_names):
     max_combinations = len(first_names) * len(last_names)
@@ -208,11 +228,13 @@ def gen_new_name(existing_users, first_names, last_names):
 
     return None, None
 
+
 def gen_random_institution(institutions, roles):
     return InstitutionAssociation(
         institution=random.choice(institutions),
-        role=random.choice(roles)
+        role=random.choice(roles),
     )
+
 
 def make_random_user():
     # Make the user
@@ -230,16 +252,13 @@ def make_random_user():
         searcher_role = 'educator'
         searching_for_role = 'partner'
         bio = generate_educator_bio()
-        associations = [
-            gen_random_institution(schools, educator_roles)
-        ]
+        associations = [gen_random_institution(schools, educator_roles)]
     else:
         searcher_role = 'partner'
         searching_for_role = 'educator'
         bio = generate_expert_bio()
         associations = [
-            gen_random_institution(companies, partner_roles)
-            for _ in range(random.randint(1, 2))
+            gen_random_institution(companies, partner_roles) for _ in range(random.randint(1, 2))
         ]
 
     new_user = User(
@@ -278,6 +297,7 @@ def make_random_user():
     store.session.add(new_user)
     store.session.commit()
 
+
 def make_labels():
     all_labels = labels['GradeLevels'] + labels['SubjectAreas'] + labels['LevelOfEngagement']
     for name in all_labels:
@@ -291,8 +311,13 @@ def make_labels():
 
 def make_admin_user(name, email, password):
     password_hash = User.pwd_context.encrypt(password)
-    new_user = User(name=name, email=email, password_hash=password_hash,
-                    is_administrator=True, email_confirmed=True)
+    new_user = User(
+        name=name,
+        email=email,
+        password_hash=password_hash,
+        is_administrator=True,
+        email_confirmed=True,
+    )
     store.session.add(new_user)
     try:
         store.session.commit()
@@ -300,6 +325,7 @@ def make_admin_user(name, email, password):
         store.session.rollback()
         new_user = None
     return new_user
+
 
 def update_questions(questions):
     new_hashs = set([question.make_hash() for question in questions])
@@ -315,29 +341,34 @@ def update_questions(questions):
         if question.make_hash() in hashs_to_add:
             store.session.add(question)
 
+
 def init_db():
     Base.metadata.reflect(store.engine)
     logger.info('Dropping all tables.')
-    Base.metadata.drop_all(store.engine);
+    Base.metadata.drop_all(store.engine)
     logger.info('Creating all tables.')
-    Base.metadata.create_all(store.engine);
+    Base.metadata.create_all(store.engine)
+
 
 def update_db():
     Base.metadata.reflect(store.engine)
     logger.info('Creating all tables.')
-    Base.metadata.create_all(store.engine, checkfirst=True);
+    Base.metadata.create_all(store.engine, checkfirst=True)
     logger.info('Created all tables.')
+
 
 def get_creator():
     admin_emails = config.ADMIN_EMAIL_ADDRESSES.split(',')
     admin_emails = [x.strip() for x in admin_emails]
     admin_user = None
     for admin_email in admin_emails:
-        admin_user = store.session.query(User).filter(
-            User.active==True, User.email==admin_email).first()
+        admin_user = store.session.query(User)
+        admin_user = admin_user.filter(User.active == True, User.email == admin_email)
+        admin_user = admin_user.first()
         if admin_user is not None:
             break
     return admin_user
+
 
 def setup(n_random_users=100):
     logger.info('Starting setup script.')
@@ -366,6 +397,7 @@ def setup(n_random_users=100):
     questions = setup_data.get_questions(creator)
     update_questions(questions)
     store.session.commit()
+
 
 if __name__ == '__main__':
     logger.info('Loading settings from environment')

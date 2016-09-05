@@ -5,10 +5,11 @@ from sqlalchemy import Column, String, DateTime, Boolean
 
 from community_share import store, Base
 
+
 class Secret(Base):
     __tablename__ = 'secret'
     KEY_LENGTH = 200
-    
+
     key = Column(String(KEY_LENGTH), primary_key=True)
     info = Column(String)
     expiration = Column(DateTime, default=datetime.utcnow)
@@ -46,6 +47,10 @@ class Secret(Base):
     @classmethod
     def lookup_secret(cls, key):
         current_time = datetime.utcnow()
-        secret = store.session.query(Secret).filter_by(key=key, used=False).filter(
-            Secret.expiration>current_time).first()
+        secret = store.session.query(Secret).filter_by(
+            key=key,
+            used=False,
+        )
+        secret = secret.filter(Secret.expiration > current_time)
+        secret = secret.first()
         return secret

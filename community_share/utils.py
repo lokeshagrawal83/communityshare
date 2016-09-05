@@ -6,6 +6,7 @@ class StatusCodes(object):
     BAD_REQUEST = 400
     SERVER_ERROR = 500
 
+
 def is_integer(s):
     try:
         f = float(s)
@@ -16,11 +17,12 @@ def is_integer(s):
     except ValueError:
         return False
 
+
 def is_email(s):
     if len(s) > 7:
-        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", s) != None:
+        if re.match(
+                "^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$",
+                s,
+        ) != None:
             return True
     return False
-
-        
-

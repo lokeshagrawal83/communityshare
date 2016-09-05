@@ -14,7 +14,7 @@ def image_to_user_filename(image_data, user_id):
     return 'user_{0:d}_{1}.{2}'.format(
         user_id,
         hashlib.sha1(image_data).hexdigest(),
-        image_type if image_type is not 'jpeg' else 'jpg'
+        image_type if image_type is not 'jpeg' else 'jpg',
     )
 
 

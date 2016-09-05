@@ -16,8 +16,4 @@ def config_from_file(filename):
 
 
 def config_from_env(key_list):
-    return {
-        key: value
-        for key, value in os.environ.items()
-        if key in key_list
-    }
+    return {key: value for key, value in os.environ.items() if key in key_list}

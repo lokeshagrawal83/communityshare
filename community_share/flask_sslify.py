@@ -10,6 +10,7 @@ YEAR_IN_SECS = 31536000
 
 logger = logging.getLogger(__name__)
 
+
 class SSLify(object):
     """Secures your Flask App."""
 

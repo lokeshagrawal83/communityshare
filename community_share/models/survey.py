@@ -9,21 +9,43 @@ from sqlalchemy.orm import relationship
 from community_share import Base
 from community_share.models.base import Serializable
 
-
 logger = logging.getLogger(__name__)
+
 
 class Question(Base, Serializable):
     __tablename__ = 'question'
 
     MANDATORY_FIELDS = ['text', 'question_type', 'public']
-    WRITEABLE_FIELDS = ['public', 'order', 'only_suggested_answers', 'suggested_answers', 'long_answer']
+    WRITEABLE_FIELDS = [
+        'public',
+        'order',
+        'only_suggested_answers',
+        'suggested_answers',
+        'long_answer',
+    ]
     STANDARD_READABLE_FIELDS = [
-        'id', 'text', 'question_type', 'public', 'only_suggested_answers', 'order',
-        'suggested_answers', 'long_answer']
+        'id',
+        'text',
+        'question_type',
+        'public',
+        'only_suggested_answers',
+        'order',
+        'suggested_answers',
+        'long_answer',
+    ]
     ADMIN_READABLE_FIELDS = [
-        'id', 'text', 'creator', 'date_created', 'question_type', 'public',
-        'only_suggested_answers', 'order', 'suggested_answers', 'long_answer']
-    
+        'id',
+        'text',
+        'creator',
+        'date_created',
+        'question_type',
+        'public',
+        'only_suggested_answers',
+        'order',
+        'suggested_answers',
+        'long_answer',
+    ]
+
     id = Column(Integer, primary_key=True)
     text = Column(String, nullable=True)
     creator_id = Column(Integer, ForeignKey('user.id'), nullable=False)
@@ -41,10 +63,7 @@ class Question(Base, Serializable):
     creator = relationship('User')
     suggested_answers = relationship('SuggestedAnswer')
 
-    PERMISSIONS = {
-        'all_can_read_many': True,
-        'standard_can_read_many': True
-    }
+    PERMISSIONS = {'all_can_read_many': True, 'standard_can_read_many': True}
 
     def __init__(self, *args, **kwargs):
         self.long_answer = False
@@ -57,16 +76,21 @@ class Question(Base, Serializable):
 
     def has_standard_rights(self, requester):
         return True
-    
+
     def serialize_suggested_answers(self, requester=None):
         serialized = [sa.text for sa in self.suggested_answers if sa.active]
         return serialized
 
     def make_hash(self):
-        hash_data = [self.text, self.question_type, self.only_suggested_answers,
-                     self.long_answer, self.serialize_suggested_answers()]
+        hash_data = [
+            self.text,
+            self.question_type,
+            self.only_suggested_answers,
+            self.long_answer,
+            self.serialize_suggested_answers(),
+        ]
         return json.dumps(hash_data)
-        
+
     @classmethod
     def args_to_query(cls, args, requester=None):
         query = cls._args_to_query(args, requester)
@@ -107,16 +131,27 @@ class Answer(Base, Serializable):
     WRITEABLE_ONCE_FIELDS = ['about_event_id', 'about_user_id', 'about_share_id']
     WRITEABLE_FIELDS = ['text']
     STANDARD_READABLE_FIELDS = [
-        'id', 'question_id', 'responder_id', 'text', 'date_created',
-        'about_user_id', 'about_share_id', 'about_event_id']
+        'id',
+        'question_id',
+        'responder_id',
+        'text',
+        'date_created',
+        'about_user_id',
+        'about_share_id',
+        'about_event_id',
+    ]
     ADMIN_READABLE_FIELDS = [
-        'id', 'question_id', 'responder_id', 'text', 'date_created',
-        'about_user_id', 'about_share_id', 'about_event_id']
+        'id',
+        'question_id',
+        'responder_id',
+        'text',
+        'date_created',
+        'about_user_id',
+        'about_share_id',
+        'about_event_id',
+    ]
 
-    PERMISSIONS = {
-        'all_can_read_many': True,
-        'standard_can_read_many': True
-    }
+    PERMISSIONS = {'all_can_read_many': True, 'standard_can_read_many': True}
 
     id = Column(Integer, primary_key=True)
     question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
@@ -140,7 +175,7 @@ class Answer(Base, Serializable):
         else:
             has_rights = False
         return has_rights
-            
+
     def has_standard_rights(self, requester):
         has_rights = False
         if requester is not None:

@@ -1,26 +1,26 @@
 from Crypto import Random
 from Crypto.Cipher import AES
 
-class CryptHelper(object):
 
+class CryptHelper(object):
     @classmethod
     def encode(cls, bytestring):
-        encoded = ''.join( [ "%02X" % x for x in bytestring])
+        encoded = ''.join(["%02X" % x for x in bytestring])
         return encoded
 
     @classmethod
     def decode(cls, hexstring):
         bs = []
         for i in range(0, len(hexstring), 2):
-            bs.append(int(hexstring[i: i+2], 16 ))
+            bs.append(int(hexstring[i:i + 2], 16))
         return bytes(bs)
 
     def __init__(self, combined_key):
         combined = self.decode(combined_key)
         key = combined[0:AES.block_size]
-        iv = combined[AES.block_size: 2*AES.block_size]
+        iv = combined[AES.block_size:2 * AES.block_size]
         self.params = (key, AES.MODE_CBC, iv)
-    
+
     def make_aes(self):
         return AES.new(*self.params)
 
@@ -60,4 +60,3 @@ if __name__ == '__main__':
     bb = bb + 'AB341212121212121212121212121212'
     cc = helper.decrypt(bb)
     print(cc)
-    

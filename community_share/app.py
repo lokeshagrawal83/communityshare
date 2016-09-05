@@ -17,6 +17,7 @@ YEAR_IN_SECONDS = 31536000
 
 logger = logging.getLogger(__name__)
 
+
 def make_app():
     webpack = Webpack()
     app = Flask(__name__, template_folder='../static/')
@@ -46,7 +47,7 @@ def make_app():
         return send_from_directory(
             app.root_path + '/../static/build/',
             filename,
-            cache_timeout=YEAR_IN_SECONDS
+            cache_timeout=YEAR_IN_SECONDS,
         )
 
     @app.route('/static/js/<path:filename>')

@@ -6,6 +6,7 @@ from community_share.routes import base_routes
 from community_share.authorization import get_requesting_user
 from community_share.utils import is_integer
 
+
 def register_search_routes(app):
 
     search_blueprint = base_routes.make_blueprint(Search, 'search')
@@ -13,7 +14,7 @@ def register_search_routes(app):
 
     @app.route('/api/labels')
     def get_labels():
-        labels = store.session.query(Label).filter(Label.active==True).all()
+        labels = store.session.query(Label).filter(Label.active == True).all()
         labelnames = [label.name for label in labels]
         response_data = {'data': labelnames}
         response = jsonify(response_data)
@@ -36,8 +37,11 @@ def register_search_routes(app):
                     matching_searches = search_utils.find_matching_searches(search, page)
 
                     serialized = [
-                        search.serialize(requester, exclude=[])
-                        for search in matching_searches]
+                        search.serialize(
+                            requester,
+                            exclude=[],
+                        ) for search in matching_searches
+                    ]
                     response_data = {'data': serialized}
                     response = jsonify(response_data)
                 else:

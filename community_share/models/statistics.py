@@ -12,6 +12,7 @@ from community_share.models.share import Share, Event
 
 logger = logging.getLogger(__name__)
 
+
 class Statistic(Base):
     __tablename__ = 'statistic'
 
@@ -33,13 +34,12 @@ class Statistic(Base):
         yesterday = today - datetime.timedelta(days=1)
         return yesterday
 
-
     @classmethod
     def get_statistics(cls, date):
-        stats = store.session.query(cls).filter(cls.date==date).all()
+        stats = store.session.query(cls).filter(cls.date == date).all()
         if len(stats) == 0:
             cls.update_statistics(date)
-            stats = store.session.query(cls).filter(cls.date==date).all()
+            stats = store.session.query(cls).filter(cls.date == date).all()
         combined = {}
         for stat in stats:
             combined[stat.name] = stat.value
@@ -50,14 +50,14 @@ class Statistic(Base):
         yesterday = cls.date_yesterday()
         for days_ago in range(30):
             date = yesterday - datetime.timedelta(days=days_ago)
-            n_stats = store.session.query(cls).filter(cls.date==date).count()
+            n_stats = store.session.query(cls).filter(cls.date == date).count()
             if n_stats == 0:
                 cls.update_statistics(date)
 
     @classmethod
     def update_statistics(cls, date, force=False):
         # Get existing statistics for that date.
-        stats = store.session.query(cls).filter(cls.date==date).all()
+        stats = store.session.query(cls).filter(cls.date == date).all()
         old_stats = {}
         for stat in stats:
             old_stats[stat.name] = stat
@@ -73,7 +73,7 @@ class Statistic(Base):
         store.session.commit()
 
     active_statistics = [
-        'n_new_users', 
+        'n_new_users',
         'n_total_users',
         'n_users_active_in_last_month',
         'n_users_started_conversation',
@@ -91,8 +91,7 @@ class Statistic(Base):
             func_name = 'calculate_{}'.format(stat_name)
             stat_func = getattr(cls, func_name, None)
             if stat_func is None:
-                logger.error('Failed to find statistic function for {}'.format(
-                    stat_name))
+                logger.error('Failed to find statistic function for {}'.format(stat_name))
             else:
                 statistics[stat_name] = stat_func(date)
         return statistics
@@ -102,9 +101,12 @@ class Statistic(Base):
         start_of_period = datetime.datetime.combine(date, datetime.time())
         end_of_period = start_of_period + datetime.timedelta(days=1)
         # Users created in time period
-        n_new_users = store.session.query(User).filter(
+        n_new_users = store.session.query(User)
+        n_new_users = n_new_users.filter(
             User.date_created > start_of_period,
-            User.date_created < end_of_period).count()
+            User.date_created < end_of_period,
+        )
+        n_new_users = n_new_users.count()
         return n_new_users
 
     @staticmethod
@@ -127,11 +129,13 @@ class Statistic(Base):
         n_active_users_in_last_month = None
         if date + datetime.timedelta(days=1) == today:
             one_month_ago = today - datetime.timedelta(days=30)
-            n_active_users_in_last_month = store.session.query(User).filter(
+            n_active_users_in_last_month = store.session.query(User)
+            n_active_users_in_last_month = n_active_users_in_last_month.filter(
                 User.last_active > one_month_ago,
-                User.active == True
-            ).count()
-        return n_active_users_in_last_month;
+                User.active == True,
+            )
+            n_active_users_in_last_month = n_active_users_in_last_month.count()
+        return n_active_users_in_last_month
 
     @staticmethod
     def calculate_n_users_started_conversation(date):
@@ -139,9 +143,11 @@ class Statistic(Base):
         end_of_period = start_of_period + datetime.timedelta(days=1)
         # Number of users who have started a conversation
         query = store.session.query(User)
-        query = query.join(Conversation, Conversation.userA_id==User.id)
-        query = query.filter(Conversation.date_created > start_of_period,
-                             Conversation.date_created < end_of_period)
+        query = query.join(Conversation, Conversation.userA_id == User.id)
+        query = query.filter(
+            Conversation.date_created > start_of_period,
+            Conversation.date_created < end_of_period,
+        )
         n_users_started_conversation = query.count()
         return n_users_started_conversation
 
@@ -152,12 +158,15 @@ class Statistic(Base):
         # Number of users who did an event
         query = store.session.query(User)
         query = query.join(
-            Share, or_(Share.educator_user_id==User.id,
-                       Share.community_partner_user_id==User.id))
+            Share,
+            or_(Share.educator_user_id == User.id, Share.community_partner_user_id == User.id),
+        )
         query = query.join(Event)
-        query = query.filter(Event.datetime_stop > start_of_period,
-                             Event.datetime_stop < end_of_period)
-        n_users_did_event = query.count()        
+        query = query.filter(
+            Event.datetime_stop > start_of_period,
+            Event.datetime_stop < end_of_period,
+        )
+        n_users_did_event = query.count()
         return n_users_did_event
 
     @staticmethod
@@ -166,10 +175,11 @@ class Statistic(Base):
         end_of_period = start_of_period + datetime.timedelta(days=1)
         # Number of users who reviewed an event
         query = store.session.query(User)
-        query = query.join(
-            UserReview, UserReview.creator_user_id==User.id)
-        query = query.filter(UserReview.date_created > start_of_period,
-                             UserReview.date_created < end_of_period)
+        query = query.join(UserReview, UserReview.creator_user_id == User.id)
+        query = query.filter(
+            UserReview.date_created > start_of_period,
+            UserReview.date_created < end_of_period,
+        )
         n_users_reviewed_event = query.count()
         return n_users_reviewed_event
 
@@ -178,9 +188,11 @@ class Statistic(Base):
         start_of_period = datetime.datetime.combine(date, datetime.time())
         end_of_period = start_of_period + datetime.timedelta(days=1)
         query = store.session.query(Event)
-        query = query.filter(Event.datetime_stop > start_of_period,
-                             Event.datetime_stop < end_of_period,
-                             Event.active == True)
+        query = query.filter(
+            Event.datetime_stop > start_of_period,
+            Event.datetime_stop < end_of_period,
+            Event.active == True,
+        )
         n_events_done = query.count()
         return n_events_done
 
@@ -189,11 +201,10 @@ class Statistic(Base):
         start_of_period = datetime.datetime.combine(date, datetime.time())
         end_of_period = start_of_period + datetime.timedelta(days=1)
         query = store.session.query(Event)
-        query = query.filter(Event.datetime_stop < end_of_period,
-                             Event.active == True)
+        query = query.filter(Event.datetime_stop < end_of_period, Event.active == True)
         n_total_events_done = query.count()
         return n_total_events_done
-        
+
     @staticmethod
     def calculate_n_upcoming_events(date):
         start_of_period = datetime.datetime.combine(date, datetime.time())
@@ -202,7 +213,7 @@ class Statistic(Base):
         query = query.filter(
             Event.date_created < end_of_period,
             Event.datetime_stop > end_of_period,
-            Event.active == True)
+            Event.active == True,
+        )
         n_upcoming_events = query.count()
         return n_upcoming_events
-        

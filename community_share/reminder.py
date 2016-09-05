@@ -9,13 +9,18 @@ logger = logging.getLogger(__name__)
 ONEDAY_EVENT_REMINDER_TEMPLATE = '''You have an share coming up with {{otheruser.name}}
 '''
 
+
 def send_reminders():
     # Send reminders before events happen.
     events = EventReminder.get_oneday_reminder_events()
     if events:
         logger.info('Sending reminders for {} events'.format(len(events)))
-        event_reminders = [EventReminder(event_id=event.id, typ='oneday_before')
-                           for event in events]
+        event_reminders = [
+            EventReminder(
+                event_id=event.id,
+                typ='oneday_before',
+            ) for event in events
+        ]
         for reminder in event_reminders:
             store.session.add(reminder)
         store.session.commit()
@@ -27,8 +32,7 @@ def send_reminders():
     events = EventReminder.get_review_reminder_events()
     if events and send_review_reminders:
         logger.info('Sending review reminders for {} events'.format(len(events)))
-        event_reminders = [EventReminder(event_id=event.id, typ='review')
-                           for event in events]
+        event_reminders = [EventReminder(event_id=event.id, typ='review') for event in events]
         for reminder in event_reminders:
             store.session.add(reminder)
             store.session.commit()

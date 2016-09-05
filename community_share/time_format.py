@@ -9,9 +9,11 @@ ARIZONA = pytz.timezone('US/Arizona')
 PRETTY_FORMAT = "%A %d %B %Y %I:%M %p"
 FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
+
 def to_iso8601(when):
     _when = when.strftime(FORMAT)
     return _when + 'Z'
+
 
 def to_pretty(when):
     '''
@@ -22,6 +24,7 @@ def to_pretty(when):
     when = when.astimezone(ARIZONA)
     _when = when.strftime(PRETTY_FORMAT) + ' (Arizona time)'
     return _when
+
 
 def from_iso8601(when=None, tz=ARIZONA):
     if when.endswith('Z'):

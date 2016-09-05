@@ -17,11 +17,13 @@ API_MANY_FORMAT = '/api/{0}'
 API_SINGLE_FORMAT = '/api/{0}/<id>'
 API_PAGINATION_FORMAT = '/api/{0}/<id>/<page>'
 
+
 def make_not_authorized_response():
     response_data = {'message': 'Authorization failed'}
     response = jsonify(response_data)
     response.status_code = StatusCodes.NOT_AUTHORIZED
     return response
+
 
 def make_forbidden_response():
     response_data = {'message': 'Forbidden'}
@@ -29,11 +31,13 @@ def make_forbidden_response():
     response.status_code = StatusCodes.FORBIDDEN
     return response
 
+
 def make_not_found_response():
     response_data = {'message': 'Not found'}
     response = jsonify(response_data)
     response.status_code = StatusCodes.NOT_FOUND
     return response
+
 
 def make_bad_request_response(message=None):
     if message is None:
@@ -43,6 +47,7 @@ def make_bad_request_response(message=None):
     response.status_code = StatusCodes.BAD_REQUEST
     return response
 
+
 def make_OK_response(message=None):
     if message is None:
         message = 'OK'
@@ -50,6 +55,7 @@ def make_OK_response(message=None):
     response = jsonify(response_data)
     response.status_code = StatusCodes.OK
     return response
+
 
 def make_server_error_response(message=None):
     if message is None:
@@ -59,12 +65,14 @@ def make_server_error_response(message=None):
     response.status_code = StatusCodes.SERVER_ERROR
     return response
 
+
 def make_many_response(requester, items):
     serialized = [item.serialize(requester) for item in items]
     serialized = [s for s in serialized if s is not None]
     response_data = {'data': serialized}
     response = jsonify(response_data)
     return response
+
 
 def make_single_response(requester, item, include_user=None):
     '''
@@ -92,7 +100,7 @@ def make_blueprint(Item, resourceName):
 
     @api.route(API_MANY_FORMAT.format(resourceName), methods=['GET'])
     def get_items():
-        logger.debug('get_items - {0}'.format(resourceName) )
+        logger.debug('get_items - {0}'.format(resourceName))
         requester = get_requesting_user()
         if requester is None and not Item.PERMISSIONS.get('all_can_read_many', False):
             response = make_not_authorized_response()
@@ -161,8 +169,7 @@ def make_blueprint(Item, resourceName):
                 store.session.commit()
                 # and refresh again to update relationships
                 refreshed_item = store.session.query(Item).filter_by(id=item.id).first()
-                response = make_single_response(
-                    requester, refreshed_item, include_user=requester)
+                response = make_single_response(requester, refreshed_item, include_user=requester)
             except ValidationException as e:
                 response = make_bad_request_response(str(e))
             except (IntegrityError, InvalidRequestError) as e:
@@ -199,7 +206,7 @@ def make_blueprint(Item, resourceName):
                             item.admin_deserialize_update(data)
                             store.session.add(item)
                             logger.debug('calling on_edit on {0}'.format(item))
-                            item.on_edit(requester, unchanged = not store.session.dirty)
+                            item.on_edit(requester, unchanged=not store.session.dirty)
                             store.session.commit()
                             response = make_single_response(requester, item)
                         except ValidationException as e:
@@ -230,4 +237,3 @@ def make_blueprint(Item, resourceName):
         return response
 
     return api
-
