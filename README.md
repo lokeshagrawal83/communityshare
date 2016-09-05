@@ -64,11 +64,3 @@ By default, this script formats every file in the project, which can take severa
 ```bash
 npm run format app.py setup.py
 ```
-
-For Javascript, we have a lint script set up but no automated formatting. The lint script is run just like the format script:
-
-```bash
-npm run lint [FILE]
-```
-
-Please eliminate errors and warnings from any file that you touch in a PR.
