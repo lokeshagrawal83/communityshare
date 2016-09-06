@@ -39,14 +39,18 @@
     <div class="row" ng-controller="MainController">
       <div ng-view></div>
     </div>
-
-    {{ javascript_tag( 'vendor' ) | safe }}
-
+    <script src="./static/js/lib/stacktrace.js"></script>
+    <script src="./static/js/lib/respond.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-resource.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular-cookies.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
     <script src="./static/js/lib/angular-file-upload.js"></script>
+    <script src="./static/js/lib/jquery-1.11.1.min.js"></script>
     <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>-->
     <!--[if lt IE 9]>
-      <script src="./static/js/lib/respond.js"></script>
       <script src="./static/js/lib/angular-shims-placeholder.min.js"></script>
     <![endif]-->
 

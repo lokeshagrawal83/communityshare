@@ -1,7 +1,6 @@
 'use strict';
 
 var angular = require( 'angular' );
-var ngResource = require( 'angular-resource' );
 
 var module = angular.module(
 'communityshare.services.authentication',

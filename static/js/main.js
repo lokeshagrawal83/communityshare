@@ -1,7 +1,5 @@
 'use strict';
 var requirements, app;
-var angular = require( 'angular' );
-var ngRoute = require( 'angular-route' );
 
 requirements = [
     'ngRoute',

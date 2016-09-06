@@ -1,8 +1,6 @@
 'use strict';
 
 var angular = require( 'angular' );
-var ngCookies = require( 'angular-cookies' );
-var ngResource = require( 'angular-resource' );
 
 var module = angular.module(
 'communityshare.services.item',
