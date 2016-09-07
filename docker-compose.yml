@@ -16,7 +16,7 @@ services:
         POSTGRES_PASSWORD: communityshare
 
   server:
-    image: dmsnell/communityshare:1.0
+    image: dmsnell/communityshare:2.0
     command: /communityshare/start_dev.sh
     ports:
       - "5000:5000"
@@ -27,7 +27,7 @@ services:
     privileged: true
 
   webpack:
-    image: dmsnell/communityshare:1.0
+    image: dmsnell/communityshare:2.0
     command: /communityshare/start_webpack.sh
     volumes:
       - .:/communityshare
