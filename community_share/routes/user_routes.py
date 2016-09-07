@@ -189,7 +189,7 @@ def register_user_routes(app):
     def post_picture(user_id):
         user = get_requesting_user()
 
-        if user_id is not user.id:
+        if user_id != user.id:
             return base_routes.make_not_authorized_response()
 
         image_file = request.files['file']
