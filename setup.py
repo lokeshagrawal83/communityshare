@@ -1,5 +1,6 @@
 import logging
 import random
+import time
 
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
@@ -342,19 +343,22 @@ def update_questions(questions):
             store.session.add(question)
 
 
+def wait_for_db():
+    while True:
+        try:
+            print('Attempting to connect to db...')
+            store.engine.connect()
+            break
+        except:
+            print('Connection failed. Waiting for 1 second.')
+            time.sleep(1)  # seconds
+
+
 def init_db():
-    Base.metadata.reflect(store.engine)
     logger.info('Dropping all tables.')
     Base.metadata.drop_all(store.engine)
     logger.info('Creating all tables.')
     Base.metadata.create_all(store.engine)
-
-
-def update_db():
-    Base.metadata.reflect(store.engine)
-    logger.info('Creating all tables.')
-    Base.metadata.create_all(store.engine, checkfirst=True)
-    logger.info('Created all tables.')
 
 
 def get_creator():
@@ -372,6 +376,7 @@ def get_creator():
 
 def setup(n_random_users=100):
     logger.info('Starting setup script.')
+    wait_for_db()
     init_db()
     logger.info('Making labels.')
     make_labels()
