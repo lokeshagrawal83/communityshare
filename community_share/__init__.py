@@ -93,6 +93,8 @@ class Config(object):
         'ENCRYPTION_KEY',
         # SSL
         'SSL',
+        'WEBPACK_ASSETS_URL',
+        'WEBPACK_MANIFEST_PATH',
     }
 
     def load_config(self, filename):

@@ -25,8 +25,8 @@ def make_app():
     app = Flask(__name__, template_folder='../static/')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = config.DB_CONNECTION
-    app.config['WEBPACK_ASSETS_URL'] = '/static/build/'
-    app.config['WEBPACK_MANIFEST_PATH'] = '../manifest.json'
+    app.config['WEBPACK_ASSETS_URL'] = config.WEBPACK_ASSETS_URL
+    app.config['WEBPACK_MANIFEST_PATH'] = config.WEBPACK_MANIFEST_PATH
 
     webpack.init_app(app)
 

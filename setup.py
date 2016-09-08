@@ -352,6 +352,7 @@ def wait_for_db():
         except:
             print('Connection failed. Waiting for 1 second.')
             time.sleep(1)  # seconds
+    print('...connected.')
 
 
 def init_db():

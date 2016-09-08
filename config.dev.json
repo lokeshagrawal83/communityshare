@@ -18,5 +18,7 @@
   "MAILGUN_API_KEY": "DUMMY",
   "MAILGUN_DOMAIN": "DUMMY",
   "LOGGING_LOCATION": "/communitysharelogs",
-  "SSL": "NO_SSL"
+  "SSL": "NO_SSL",
+  "WEBPACK_ASSETS_URL": "/static/build/",
+  "WEBPACK_MANIFEST_PATH": "/communityshare/manifest.json"
 }

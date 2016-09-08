@@ -9,6 +9,7 @@
   "UPLOAD_LOCATION": "https://communityshare.s3.amazonaws.com/",
   "LOGGING_LOCATION": "STDOUT",
   "MAILGUN_DOMAIN": "mail.app.communityshare.us",
-  "SSL": "FORCE_SSL"
+  "SSL": "FORCE_SSL",
+  "WEBPACK_ASSETS_URL": "/static/build/",
+  "WEBPACK_MANIFEST_PATH": "../manifest.json"
 }
-   
