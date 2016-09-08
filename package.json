@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "JavaScript required for communityshare.us",
   "main": "communityshare.us",
-  "devDependencies": {},
   "dependencies": {
     "css-loader": "0.24.0",
     "extract-text-webpack-plugin": "1.0.1",
@@ -16,7 +15,8 @@
   "scripts": {
     "start": "docker-compose stop && docker-compose up",
     "test": "docker-compose run --rm server python /communityshare/tests.py",
-    "format": "docker-compose run --rm server sh /communityshare/format.sh"
+    "format": "docker-compose run --rm server sh /communityshare/format.sh",
+    "js-lint": "docker-compose run --rm server sh /communityshare/lint.sh"
   },
   "repository": {
     "type": "git",
@@ -32,5 +32,12 @@
   "bugs": {
     "url": "https://github.com/communityshare/communityshare/issues"
   },
-  "homepage": "https://github.com/communityshare/communityshare#readme"
+  "homepage": "https://github.com/communityshare/communityshare#readme",
+  "devDependencies": {
+    "eslint": "3.4.0",
+    "eslint-config-airbnb": "10.0.1",
+    "eslint-plugin-import": "1.14.0",
+    "eslint-plugin-jsx-a11y": "2.2.1",
+    "eslint-plugin-react": "6.2.0"
+  }
 }
