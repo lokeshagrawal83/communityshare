@@ -5,7 +5,6 @@ requirements = [
     'ngRoute',
     'ui.bootstrap',
     'communityshare.directives.mainview',
-    'communityshare.services.stacktrace',
     'communityshare.controllers.authentication',
     'communityshare.controllers.misc',
     'communityshare.controllers.user',

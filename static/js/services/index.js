@@ -12,4 +12,3 @@ require( './search_services.js' );
 require( './message_services.js' );
 require( './survey_services.js' );
 require( './statistic_services.js' );
-require( './stacktrace_services.js' );
