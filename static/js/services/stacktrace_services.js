@@ -3,49 +3,49 @@
 
 var angular = require( 'angular' );
 
-var module = angular.module('communityshare.services.stacktrace', []);
+var module = angular.module( 'communityshare.services.stacktrace', [] );
 
 module.factory(
 'stacktraceService',
 function () {
-  return({ print: printStackTrace });
+    return( { print: printStackTrace } );
 }
 );
 
 module.provider(
 '$exceptionHandler', {
-  $get: ['errorLogService', function (errorLogService) {
-    return(errorLogService);
-  }]
+    $get: ['errorLogService', function ( errorLogService ) {
+        return( errorLogService );
+    }]
 }
 );
 
 module.factory(
 'errorLogService',
-['$log', '$window', 'stacktraceService', function ($log, $window, stacktraceService) {
-  function log (exception, cause) {
-    $log.error.apply($log, arguments);
-    try {
-      var errorMessage = exception.toString();
-      var stackTrace = stacktraceService.print({ e: exception });
-      $.ajax({
-        type: 'POST',
-        url: 'http://localhost:3030/error-log',
-        contentType: 'application/json',
-        data: angular.toJson({
-          errorUrl: $window.location.href,
-          errorMessage: errorMessage,
-          stackTrace: stackTrace,
-          cause: ( cause || '' ),
-          browser: navigator.userAgent
-        })
-      });
+['$log', '$window', 'stacktraceService', function ( $log, $window, stacktraceService ) {
+    function log ( exception, cause ) {
+        $log.error.apply( $log, arguments );
+        try {
+            var errorMessage = exception.toString();
+            var stackTrace = stacktraceService.print( { e: exception } );
+            $.ajax( {
+                type: 'POST',
+                url: 'http://localhost:3030/error-log',
+                contentType: 'application/json',
+                data: angular.toJson( {
+                    errorUrl: $window.location.href,
+                    errorMessage: errorMessage,
+                    stackTrace: stackTrace,
+                    cause: ( cause || '' ),
+                    browser: navigator.userAgent
+                } )
+            } );
+        }
+    catch ( loggingError ) {
+        $log.warn( 'Error logging failed' );
+        $log.log( loggingError );
     }
-    catch (loggingError) {
-      $log.warn('Error logging failed');
-      $log.log(loggingError);
     }
-  }
-  return(log);
+    return( log );
 }]
 );
