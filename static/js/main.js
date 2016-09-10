@@ -1,327 +1,298 @@
 'use strict';
-var requirements, app;
 
-requirements = [
-    'ngRoute',
-    'ui.bootstrap',
-    'communityshare.directives.mainview',
-    'communityshare.controllers.authentication',
-    'communityshare.controllers.misc',
-    'communityshare.controllers.user',
-    'communityshare.controllers.search',
-    'communityshare.controllers.message',
-    'communityshare.controllers.share',
-    'communityshare.directives.labels',
-    'communityshare.services.share'
+const requirements = [
+	'ngRoute',
+	'ui.bootstrap',
+	'communityshare.directives.mainview',
+	'communityshare.controllers.authentication',
+	'communityshare.controllers.misc',
+	'communityshare.controllers.user',
+	'communityshare.controllers.search',
+	'communityshare.controllers.message',
+	'communityshare.controllers.share',
+	'communityshare.directives.labels',
+	'communityshare.services.share'
 ];
 
 // Use placeholder shim if browser doesn't support html5
-if ( !window.history.replaceState ) {
-    requirements.push( 'ng.shims.placeholder' );
+if ( ! window.history.replaceState ) {
+	requirements.push( 'ng.shims.placeholder' );
 }
 
-app = angular.module( 'communityshare', requirements );
+const app = angular.module( 'communityshare', requirements );
 
-app.config( ['$routeProvider', function ( $routeProvider ) {
+const invoker = f => f();
+const requireLogin = { user: [ 'activeUserLoader', invoker ] };
 
-    $routeProvider.when( '/', {
-        templateUrl: './static/templates/default.html',
-        controller: 'DefaultController',
-        resolve: {
-            user: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+const routes = [
+	[ '/', {
+		templateUrl: './static/templates/default.html',
+		controller: 'DefaultController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/signup/choice', {
-        templateUrl: './static/templates/choose_user_type.html'
-    } );
+	[ '/signup/choice', {
+		templateUrl: './static/templates/choose_user_type.html'
+	} ],
 
-    $routeProvider.when( '/login', {
-        templateUrl: './static/templates/login.html',
-        controller: 'LoginController'
-    } );
+	[ '/login', {
+		templateUrl: './static/templates/login.html',
+		controller: 'LoginController'
+	} ],
 
-    $routeProvider.when( '/signup/communitypartner', {
-        templateUrl: './static/templates/signup_community_partner.html',
-        controller: 'SignupCommunityPartnerController',
-        resolve: {
-            user: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/signup/communitypartner', {
+		templateUrl: './static/templates/signup_community_partner.html',
+		controller: 'SignupCommunityPartnerController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/signup/personal', {
-        templateUrl: './static/templates/signup_personal.html',
-        controller: 'SignupPersonalController',
-        resolve: {
-            user: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/signup/personal', {
+		templateUrl: './static/templates/signup_personal.html',
+		controller: 'SignupPersonalController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/signup/educator', {
-        templateUrl: './static/templates/signup_educator.html',
-        controller: 'SignupEducatorController',
-        resolve: {
-            user: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/signup/educator', {
+		templateUrl: './static/templates/signup_educator.html',
+		controller: 'SignupEducatorController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/requestresetpassword', {
-        templateUrl: './static/templates/request_reset_password.html',
-        controller: 'RequestResetPasswordController'
-    } );
+	[ '/requestresetpassword', {
+		templateUrl: './static/templates/request_reset_password.html',
+		controller: 'RequestResetPasswordController'
+	} ],
 
-    $routeProvider.when( '/resetpassword', {
-        templateUrl: './static/templates/reset_password.html',
-        controller: 'ResetPasswordController'
-    } );
+	[ '/resetpassword', {
+		templateUrl: './static/templates/reset_password.html',
+		controller: 'ResetPasswordController'
+	} ],
 
-    $routeProvider.when( '/confirmemail', {
-        templateUrl: './static/templates/confirm_email.html',
-        controller: 'ConfirmEmailController'
-    } );
+	[ '/confirmemail', {
+		templateUrl: './static/templates/confirm_email.html',
+		controller: 'ConfirmEmailController'
+	} ],
 
-    $routeProvider.when( '/settings', {
-        templateUrl: './static/templates/settings.html',
-        controller: 'SettingsController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/settings', {
+		templateUrl: './static/templates/settings.html',
+		controller: 'SettingsController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/messages', {
-        templateUrl: './static/templates/messages.html',
-        controller: 'MessagesController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/messages', {
+		templateUrl: './static/templates/messages.html',
+		controller: 'MessagesController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/shares', {
-        templateUrl: './static/templates/shares.html',
-        controller: 'SharesController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/shares', {
+		templateUrl: './static/templates/shares.html',
+		controller: 'SharesController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/user/:userId', {
-        templateUrl: './static/templates/user_view.html',
-        controller: 'UserController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/user/:userId', {
+		templateUrl: './static/templates/user_view.html',
+		controller: 'UserController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/search/:searchId/edit', {
-        templateUrl: './static/templates/search_edit.html',
-        controller: 'SearchEditController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/search/:searchId/edit', {
+		templateUrl: './static/templates/search_edit.html',
+		controller: 'SearchEditController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/searchusers/:searchText', {
-        templateUrl: './static/templates/search_users.html',
-        controller: 'SearchUsersController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/searchusers/:searchText', {
+		templateUrl: './static/templates/search_users.html',
+		controller: 'SearchUsersController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/searchusers', {
-        templateUrl: './static/templates/search_users.html',
-        controller: 'SearchUsersController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/searchusers', {
+		templateUrl: './static/templates/search_users.html',
+		controller: 'SearchUsersController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/matches', {
-        templateUrl: './static/templates/matches.html',
-        controller: 'MatchesController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/matches', {
+		templateUrl: './static/templates/matches.html',
+		controller: 'MatchesController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/admin', {
-        templateUrl: './static/templates/admin.html',
-        controller: 'AdminController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/admin', {
+		templateUrl: './static/templates/admin.html',
+		controller: 'AdminController',
+		resolve: requireLogin
+	} ],
 
+	[ '/search/:searchId/results', {
+		templateUrl: './static/templates/search_results.html',
+		controller: 'SearchResultsController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/search/:searchId/results', {
-        templateUrl: './static/templates/search_results.html',
-        controller: 'SearchResultsController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/search', {
+		templateUrl: './static/templates/search.html',
+		controller: 'SearchEditController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/search', {
-        templateUrl: './static/templates/search.html',
-        controller: 'SearchEditController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/conversation/unviewed', {
+		templateUrl: './static/templates/unviewed_conversations.html',
+		controller: 'UnviewedConversationController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/conversation/unviewed', {
-        templateUrl: './static/templates/unviewed_conversations.html',
-        controller: 'UnviewedConversationController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/events', {
+		templateUrl: './static/templates/events.html',
+		controller: 'EventsController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/events', {
-        templateUrl: './static/templates/events.html',
-        controller: 'EventsController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/event/:eventId', {
+		templateUrl: './static/templates/event_view.html',
+		controller: 'EventController',
+		resolve: {
+			activeUser: [ 'activeUserLoader', invoker ],
+			evnt: [ 'eventLoader', '$route', function( eventLoader, $route ) {
+				return eventLoader( $route.current.params.eventId );
+			} ]
+		}
+	} ],
 
-    $routeProvider.when( '/event/:eventId', {
-        templateUrl: './static/templates/event_view.html',
-        controller: 'EventController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }],
-            evnt: ['eventLoader', '$route', function ( eventLoader, $route ) {
-                return eventLoader( $route.current.params.eventId );
-            }]
-        }
-    } );
+	[ '/conversation/:conversationId', {
+		templateUrl: './static/templates/conversation.html',
+		controller: 'ConversationController',
+		resolve: {
+			activeUser: [ 'activeUserLoader', invoker ],
+			conversation: [ 'conversationLoader', '$route', function( conversationLoader, $route ) {
+				return conversationLoader( $route.current.params.conversationId );
+			} ]
+		}
+	} ],
 
-    $routeProvider.when( '/conversation/:conversationId', {
-        templateUrl: './static/templates/conversation.html',
-        controller: 'ConversationController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }],
-            conversation: ['conversationLoader', '$route', function ( conversationLoader, $route ) {
-                return conversationLoader( $route.current.params.conversationId );
-            }]
-        }
-    } );
+	[ '/share/new', {
+		templateUrl: './static/templates/share_edit.html',
+		controller: 'NewShareController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/share/new', {
-        templateUrl: './static/templates/share_edit.html',
-        controller: 'NewShareController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/share/:shareId', {
+		templateUrl: './static/templates/share.html',
+		controller: 'ShareController',
+		resolve: requireLogin
+	} ],
 
-    $routeProvider.when( '/share/:shareId', {
-        templateUrl: './static/templates/share.html',
-        controller: 'ShareController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+	[ '/auth_redirect', {
+		templateUrl: './static/templates/auth_redirect.html',
+		controller: 'AuthRedirectController',
+		resolve: requireLogin
+	} ]
+];
 
-    $routeProvider.when( '/auth_redirect', {
-        templateUrl: './static/templates/auth_redirect.html',
-        controller: 'AuthRedirectController',
-        resolve: {
-            activeUser: ['activeUserLoader', function ( activeUserLoader ) {
-                return activeUserLoader();
-            }]
-        }
-    } );
+app.config( [ '$routeProvider', function( $routeProvider ) {
+	routes.forEach(
+		( [ path, route ] ) => $routeProvider.when( path, route )
+	);
 
-    $routeProvider.otherwise( {
-        templateUrl: './static/templates/unknown.html'
-    } );
-}] );
+	$routeProvider.otherwise( {
+		templateUrl: './static/templates/unknown.html'
+	} );
+} ] );
 
 //http://stackoverflow.com/questions/16098430/angular-ie-caching-issue-for-http
-app.config( ['$httpProvider', function ( $httpProvider ) {
-    //initialize get if not there
-    if ( !$httpProvider.defaults.headers.get ) {
-        $httpProvider.defaults.headers.get = {};
-    }
-    //disable IE ajax request caching
-    $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
-}] );
+app.config( [ '$httpProvider', function( $httpProvider ) {
+	//initialize get if not there
+	if ( ! $httpProvider.defaults.headers.get ) {
+		$httpProvider.defaults.headers.get = {};
+	}
 
-// Patch .indexOf() for IE8
-// http://stackoverflow.com/questions/3629183/why-doesnt-indexof-work-on-an-array-ie8
-if ( !Array.prototype.indexOf ) {
-    Array.prototype.indexOf = function ( elt ) {
-        var len
-            , from
-            ;
+	//disable IE ajax request caching
+	$httpProvider.defaults.headers.get[ 'If-Modified-Since' ] = '0';
+} ] );
 
-        len = this.length >>> 0;
-        from = Number( arguments[1] ) || 0;
-        from = ( from < 0 ) ? Math.ceil( from ) : Math.floor( from );
+// From MDN
+// Production steps of ECMA-262, Edition 5, 15.4.4.14
+// Reference: http://es5.github.io/#x15.4.4.14
+if ( ! Array.prototype.indexOf ) {
+	Array.prototype.indexOf = function( searchElement, fromIndex ) {
 
-        if ( from < 0 ) from += len;
+		var k;
 
-        for ( ; from < len; from++ ) {
-            if ( from in this && this[from] === elt ) return from;
-        }
+		// 1. Let o be the result of calling ToObject passing
+		//    the this value as the argument.
+		if ( this == null ) {
+			throw new TypeError( '"this" is null or not defined' );
+		}
 
-        return -1;
-    };
+		var o = Object( this );
+
+		// 2. Let lenValue be the result of calling the Get
+		//    internal method of o with the argument "length".
+		// 3. Let len be ToUint32(lenValue).
+		var len = o.length >>> 0;
+
+		// 4. If len is 0, return -1.
+		if ( len === 0 ) {
+			return - 1;
+		}
+
+		// 5. If argument fromIndex was passed let n be
+		//    ToInteger(fromIndex); else let n be 0.
+		var n = + fromIndex || 0;
+
+		if ( Math.abs( n ) === Infinity ) {
+			n = 0;
+		}
+
+		// 6. If n >= len, return -1.
+		if ( n >= len ) {
+			return - 1;
+		}
+
+		// 7. If n >= 0, then Let k be n.
+		// 8. Else, n<0, Let k be len - abs(n).
+		//    If k is less than 0, then let k be 0.
+		k = Math.max( n >= 0 ? n : len - Math.abs( n ), 0 );
+
+		// 9. Repeat, while k < len
+		while ( k < len ) {
+			// a. Let Pk be ToString(k).
+			//   This is implicit for LHS operands of the in operator
+			// b. Let kPresent be the result of calling the
+			//    HasProperty internal method of o with argument Pk.
+			//   This step can be combined with c
+			// c. If kPresent is true, then
+			//    i.  Let elementK be the result of calling the Get
+			//        internal method of o with the argument ToString(k).
+			//   ii.  Let same be the result of applying the
+			//        Strict Equality Comparison Algorithm to
+			//        searchElement and elementK.
+			//  iii.  If same is true, return k.
+			if ( k in o && o[ k ] === searchElement ) {
+				return k;
+			}
+			k ++;
+		}
+		return - 1;
+	};
 }
 
-// Provide String.trim() poly-fill for IE8
-if ( typeof String.prototype.trim !== 'function' ) {
-    String.prototype.trim = function () {
-        return this.replace( /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '' );
-    };
+// From MDN
+if ( ! String.prototype.trim ) {
+	String.prototype.trim = function() {
+		return this.replace( /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '' );
+	};
 }
 
 window.console = window.console || {};
 
-Date.now = Date.now || function () {
-    return +new Date;
-};
+// From MDN
+if ( ! Date.now ) {
+	Date.now = function now() {
+		return new Date().getTime();
+	};
+}
 
