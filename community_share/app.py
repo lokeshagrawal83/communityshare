@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask import Flask, send_from_directory, render_template
+from flask_cors import CORS
 from flask.ext.compress import Compress
 from flask_webpack import Webpack
 
@@ -22,6 +23,11 @@ logger = logging.getLogger(__name__)
 
 
 def make_app():
+    cors = CORS(origins=[
+        'https://app.communityshare.us:443',
+        'http://communityshare.localhost:5000',
+        'http://communityshare.localhost:8000',
+    ])
     compress = Compress()
     webpack = Webpack()
     app = Flask(__name__, template_folder='../static/')
@@ -30,6 +36,7 @@ def make_app():
     app.config['WEBPACK_ASSETS_URL'] = config.WEBPACK_ASSETS_URL
     app.config['WEBPACK_MANIFEST_PATH'] = config.WEBPACK_MANIFEST_PATH
 
+    cors.init_app(app)
     compress.init_app(app)
     webpack.init_app(app)
 
