@@ -110,16 +110,7 @@ In the debugging tools, select `Edit Configurations` and then add a new `Python 
  - `post = 5678`
 
 To start debugging, start the remote debugging tool and start the application server. When PyCharm loads the initial breakpoint, it will ask to specify the path mapping. It is sufficient to let it automatically detect the path mapping.
-npm test
-```
 
-#### Other Debugging
-
-There is a script to format python files. It should be run before any python PR is merged.
-
-```bash
-npm run format
-```
 
 ### Docker Notes
 
