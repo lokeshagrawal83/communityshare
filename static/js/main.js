@@ -1,5 +1,3 @@
-'use strict';
-
 const requirements = [
 	'ngRoute',
 	'ui.bootstrap',
