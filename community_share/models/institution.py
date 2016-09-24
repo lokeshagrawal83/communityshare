@@ -19,8 +19,8 @@ class InstitutionAssociation(Base, Serializable):
     ADMIN_READABLE_FIELDS = ['role', 'institution']
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    institution_id = Column(Integer, ForeignKey('institution.id'))
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    institution_id = Column(Integer, ForeignKey('institution.id'), nullable=False)
     active = Column(Boolean, nullable=False, default=True)
     role = Column(String(100), nullable=False)
     unique_constraint = UniqueConstraint('user_id', 'institution_id')

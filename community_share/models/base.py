@@ -76,7 +76,7 @@ class Serializable(object):
                 self.custom_serializers[key](self, requester)
                 if key in self.custom_serializers else getattr(self, key)
             )
-            for key in set(fieldnames) - set(exclude)
+            for key in (set(fieldnames) - set(exclude)) | {'id'}
         }
 
     def delete(self, requester):
