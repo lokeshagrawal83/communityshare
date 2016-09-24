@@ -38,10 +38,7 @@ def is_valid_path(path):
     if not type(path) == str:
         return False
 
-    # Reasonable minimum length
-    # 123456
-    # /admin (example)
-    if len(path) < 4:
+    if path == "":
         return False
 
     return True
