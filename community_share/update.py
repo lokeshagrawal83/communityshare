@@ -1,3 +1,4 @@
+from community_share.models.analytics import PageView
 from community_share.models.search import Label, Search
 from community_share.models.user import User, UserReview
 from community_share.models.institution import Institution, InstitutionAssociation

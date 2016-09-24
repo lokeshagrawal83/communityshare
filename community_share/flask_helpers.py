@@ -2,6 +2,7 @@ from functools import wraps
 
 from flask import request
 
+from community_share import store
 from community_share.authorization import get_requesting_user
 from community_share.routes import base_routes
 
@@ -37,3 +38,12 @@ def needs_auth(auth_level='user'):
 
 def needs_admin_auth():
     return needs_auth('admin')
+
+
+def with_store(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        actual_store = kwargs.pop('store', store)
+        return f(*args, store=actual_store, **kwargs)
+
+    return wrapped

@@ -465,3 +465,6 @@ class UserReview(Base, Serializable):
                 if not already_exists:
                     has_rights = True
         return has_rights
+
+from community_share.models.conversation import Conversation
+from community_share.models.share import Event
