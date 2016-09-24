@@ -24,9 +24,10 @@ logger = logging.getLogger(__name__)
 
 def make_app():
     cors = CORS(origins=[
-        'https://app.communityshare.us:443',
-        'http://communityshare.localhost:5000',
-        'http://communityshare.localhost:8000',
+        'https://app.communityshare.us:443', # production app
+        'http://communityshare.localhost:5000', # local dev angular app
+        'http://communityshare.localhost:8000', # local dev elm app
+        'https://dmsnell.github.io/cs-elm/', # live elm app
     ])
     compress = Compress()
     webpack = Webpack()
