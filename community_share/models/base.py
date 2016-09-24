@@ -2,6 +2,7 @@ import logging
 import datetime
 import dateutil
 from dateutil import parser
+from typing import Any, Dict, List, Optional
 
 from sqlalchemy import Column, String, DateTime, Boolean
 
@@ -55,27 +56,28 @@ class Serializable(object):
 
     custom_serializers = {}
 
-    def _base_serialize(self, requester, exclude=[]):
-        d = {}
+    def serialize(self, requester, exclude: List[str] = []) -> Optional[Dict[str, Any]]:
+        """
+        Serializes readable fields by user role
+
+        :param requester: user requesting data
+        :param exclude: optional list of fields by name to exclude
+        :return: readable fields for user or None if no permission
+        """
         if self.has_admin_rights(requester):
             fieldnames = self.ADMIN_READABLE_FIELDS
         elif self.has_standard_rights(requester):
             fieldnames = self.STANDARD_READABLE_FIELDS
         else:
-            fieldnames = None
-        if fieldnames is None:
-            d = None
-        else:
-            for fieldname in fieldnames:
-                if not fieldname in exclude:
-                    if fieldname in self.custom_serializers:
-                        d[fieldname] = self.custom_serializers[fieldname](self, requester)
-                    else:
-                        d[fieldname] = getattr(self, fieldname)
-        return d
+            return None
 
-    def serialize(self, requester, exclude=[]):
-        return self._base_serialize(requester, exclude)
+        return {
+            key: (
+                self.custom_serializers[key](self, requester)
+                if key in self.custom_serializers else getattr(self, key)
+            )
+            for key in set(fieldnames) - set(exclude)
+        }
 
     def delete(self, requester):
         previously_deleted = not self.active

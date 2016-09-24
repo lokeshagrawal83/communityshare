@@ -227,9 +227,6 @@ class User(Base, Serializable):
                 has_admin_rights = True
         return has_admin_rights
 
-    def serialize(self, requester, exclude=[]):
-        return self._base_serialize(requester, exclude)
-
     def serialize_institution_associations(self, requester):
         associations = [i.serialize(requester) for i in self.institution_associations]
         return associations
@@ -237,7 +234,7 @@ class User(Base, Serializable):
     def serialize_educator_profile_search(self, requester):
         search = self.educator_profile_search
         if (search and search.active):
-            serialized = search.serialize(requester, exclude='searcher_user')
+            serialized = search.serialize(requester, exclude=['searcher_user'])
         else:
             serialized = None
         return serialized
@@ -245,7 +242,7 @@ class User(Base, Serializable):
     def serialize_community_partner_profile_search(self, requester):
         search = self.community_partner_profile_search
         if (search and search.active):
-            serialized = search.serialize(requester, exclude='searcher_user')
+            serialized = search.serialize(requester, exclude=['searcher_user'])
         else:
             serialized = None
         return serialized
