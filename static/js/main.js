@@ -200,6 +200,22 @@ app.config( [ '$routeProvider', function( $routeProvider ) {
 	} );
 } ] );
 
+const pathname = url => {
+  const a = document.createElement('a');
+  a.href = url;
+  // TODO: remove a.hash after #-navigation is removed.
+  return a.pathname + a.hash + a.search;
+};
+
+app.run( [ '$rootScope', '$http', function( $rootScope, $http ) {
+  $rootScope.$on( '$locationChangeStart', ( _, next_path, prev_path ) => {
+      $http.post( 'rest/analytics/views/', {
+        next_path: pathname(next_path),
+        prev_path: pathname(prev_path)
+      } );
+  } );
+} ] );
+
 //http://stackoverflow.com/questions/16098430/angular-ie-caching-issue-for-http
 app.config( [ '$httpProvider', function( $httpProvider ) {
 	//initialize get if not there
