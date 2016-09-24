@@ -3,6 +3,8 @@ var webpack = require( 'webpack' );
 var ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
 var ManifestPlugin = require( 'manifest-revision-webpack-plugin' );
 
+var bundleHash = process.env.NODE_ENV === 'production' ? '.[chunkhash]' : '';
+
 module.exports = {
     entry: {
         bundle: path.join( __dirname, 'static', 'js', 'index.js' )
@@ -33,11 +35,11 @@ module.exports = {
             ignorePaths: [ /\.map$/ ],
             extensionsRegex: /\.js$/
         } ),
-        new ExtractTextPlugin( 'bundle.[chunkhash].css', { allChunks: true } )
+        new ExtractTextPlugin( 'bundle' + bundleHash + '.css', { allChunks: true } )
     ],
     output: {
         path: path.join( __dirname, 'static', 'build' ),
-        filename: '[name].[chunkhash].js'
+        filename: '[name]' + bundleHash + '.js'
     },
     devtool: 'source-map',
     // needed because we won't get inotify/fsevents
