@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 import string, random, json
 
+from typing import Any, Dict, Optional
+
 from sqlalchemy import Column, String, DateTime, Boolean
 
-from community_share import Base, with_store
+from community_share import Base, Store, with_store
 
 
 class Secret(Base):
@@ -39,7 +41,7 @@ class Secret(Base):
 
 
 @with_store
-def create_secret(info, hours_duration, store=None):
+def create_secret(info: Dict[str, Any], hours_duration: int, store: Store=None) -> Secret:
     secret = Secret.make(info, hours_duration)
     store.session.add(secret)
     store.session.commit()
@@ -47,8 +49,9 @@ def create_secret(info, hours_duration, store=None):
 
 
 @with_store
-def lookup_secret(key, store=None):
+def lookup_secret(key: str, store: Store=None) -> Optional[Secret]:
     secret = store.session.query(Secret)
+    secret = secret.filter(Secret.key == key)
     secret = secret.filter(Secret.used == False)
     secret = secret.filter(Secret.expiration > datetime.utcnow())
-    return secret.get(key)
+    return secret.first()
