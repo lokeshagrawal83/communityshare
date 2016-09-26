@@ -8,25 +8,35 @@ from community_share.models.user import User
 
 
 def get_requesting_user() -> Optional[User]:
+    """Fetch User given Flask request
+
+    :return User: logged-in user or None
+    """
     authorization = request.headers.get('Authorization', None)
 
     try:
         auth_type, method, value = authorization.split(':')
-    except:
+    except (AttributeError, ValueError):
         return None
 
-    if 'Basic' != auth_type:
+    if auth_type != 'Basic':
         return None
 
-    if 'api' == method:
+    if method == 'api':
         return user_from_api_key(value)
 
-    # Must have an email, password pair
+    # Probably have an email, password pair
     return user_from_login(method, value)
 
 
 @with_store
 def user_from_api_key(key: str, store: Store=None) -> Optional[User]:
+    """Fetch User given api key
+
+    :param str key: given api key
+    :param Store store: connection to database
+    :return User: found user or None
+    """
     secret = lookup_secret(key)
 
     if secret is None:
@@ -42,6 +52,13 @@ def user_from_api_key(key: str, store: Store=None) -> Optional[User]:
 
 @with_store
 def user_from_login(email: str, password: str, store: Store=None) -> Optional[User]:
+    """Fetch User given login credentials
+
+    :param str email: given email
+    :param str password: given password
+    :param Store store: connection to database
+    :return User: found user or None
+    """
     user = store.session.query(User)
     user = user.filter_by(email=email, active=True)
     user = user.first()
