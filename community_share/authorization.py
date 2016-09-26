@@ -1,5 +1,3 @@
-import logging
-
 from typing import Optional
 
 from flask import request
@@ -7,16 +5,6 @@ from flask import request
 from community_share import Store, with_store
 from community_share.models.secret import lookup_secret
 from community_share.models.user import User
-
-logger = logging.getLogger(__name__)
-
-
-class NotAuthorizedException(Exception):
-    pass
-
-
-class ForbiddenException(Exception):
-    pass
 
 
 def get_requesting_user() -> Optional[User]:
