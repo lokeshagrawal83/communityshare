@@ -10,12 +10,9 @@ from community_share.models.user import User
 def get_requesting_user() -> Optional[User]:
     authorization = request.headers.get('Authorization', None)
 
-    if authorization is None:
-        return None
-
     try:
         auth_type, method, value = authorization.split(':')
-    except ValueError:
+    except:
         return None
 
     if 'Basic' != auth_type:
