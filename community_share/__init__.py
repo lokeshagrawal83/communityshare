@@ -3,6 +3,9 @@ import logging
 import json
 import sys
 
+from functools import wraps
+from typing import Any, Callable
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
@@ -62,6 +65,15 @@ class Store(object):
 
 
 store = Store()
+
+
+def with_store(f: Callable[..., Any]) -> Callable[..., Any]:
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        actual_store = kwargs.pop('store', store)
+        return f(*args, store=actual_store, **kwargs)
+
+    return wrapped
 
 
 class Config(object):

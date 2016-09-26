@@ -3,8 +3,7 @@ import string, random, json
 
 from sqlalchemy import Column, String, DateTime, Boolean
 
-from community_share import Base
-from community_share.flask_helpers import with_store
+from community_share import Base, with_store
 
 
 class Secret(Base):

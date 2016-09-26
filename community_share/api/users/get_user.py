@@ -2,8 +2,8 @@ from typing import Optional
 
 from flask import jsonify, request, Response
 
-from community_share import Store
-from community_share.flask_helpers import needs_auth, serialize, with_store
+from community_share import Store, with_store
+from community_share.flask_helpers import needs_auth, serialize
 from community_share.models.user import User
 from community_share.routes.base_routes import make_not_found_response
 from community_share.utils import int_or

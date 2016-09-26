@@ -2,7 +2,6 @@ from functools import wraps
 
 from flask import request
 
-from community_share import store
 from community_share.authorization import get_requesting_user
 from community_share.routes import base_routes
 
@@ -65,11 +64,3 @@ def serialize_many(user, raw_items, fields=None):
 
     return [item for item in items if item is not None]
 
-
-def with_store(f):
-    @wraps(f)
-    def wrapped(*args, **kwargs):
-        actual_store = kwargs.pop('store', store)
-        return f(*args, store=actual_store, **kwargs)
-
-    return wrapped
