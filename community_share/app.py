@@ -1,12 +1,15 @@
 import logging
 import os
 
+from http import HTTPStatus
+
 from flask import Flask, send_from_directory, render_template
 from flask_cors import CORS
 from flask.ext.compress import Compress
 from flask_webpack import Webpack
 
 from community_share import config, store, flask_sslify
+from community_share.app_exceptions import BadRequest
 from community_share.routes.user_routes import register_user_routes
 from community_share.routes.search_routes import register_search_routes
 from community_share.routes.conversation_routes import register_conversation_routes
@@ -56,6 +59,10 @@ def make_app():
     @app.teardown_appcontext
     def close_db_connection(exception):
         store.session.remove()
+
+    @app.errorhandler(BadRequest)
+    def handle_bad_request(error):
+        return str(error), HTTPStatus.BAD_REQUEST
 
     @app.route('/static/build/<path:filename>')
     def build_static(filename):
