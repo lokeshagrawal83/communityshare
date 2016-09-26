@@ -13,7 +13,7 @@ from passlib import context
 
 from community_share import store, Base, config
 from community_share.models.base import Serializable, ValidationException
-from community_share.models.secret import Secret
+from community_share.models.secret import create_secret
 from community_share.models.search import Search
 from community_share.models.institution import InstitutionAssociation, Institution
 
@@ -309,25 +309,8 @@ class User(Base, Serializable):
             'userId': self.id,
             'action': 'api_key',
         }
-        secret = Secret.create_secret(info=secret_data, hours_duration=24)
+        secret = create_secret(secret_data, 24)
         return secret
-
-    @classmethod
-    def from_api_key(self, key):
-        secret = Secret.lookup_secret(key)
-        logger.debug('key is {0}'.format(key))
-        logger.debug('secret is {0}'.format(secret))
-        user_id = None
-        if secret is not None:
-            info = secret.get_info()
-            if info.get('action', None) == 'api_key':
-                user_id = info.get('userId', None)
-        if user_id is not None:
-            user = store.session.query(User).filter_by(id=user_id).first()
-            logger.debug('user from api_key is {0}'.format(user))
-        else:
-            user = None
-        return user
 
     def on_delete(self, requester):
         # Importing here to prevent circular reference

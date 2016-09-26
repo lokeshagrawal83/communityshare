@@ -3,7 +3,8 @@ import string, random, json
 
 from sqlalchemy import Column, String, DateTime, Boolean
 
-from community_share import store, Base
+from community_share import Base
+from community_share.flask_helpers import with_store
 
 
 class Secret(Base):
@@ -37,20 +38,18 @@ class Secret(Base):
             logger.error("Invalid JSON data in secret.info")
         return info
 
-    @classmethod
-    def create_secret(cls, info, hours_duration):
-        secret = Secret.make(info, hours_duration)
-        store.session.add(secret)
-        store.session.commit()
-        return secret
 
-    @classmethod
-    def lookup_secret(cls, key):
-        current_time = datetime.utcnow()
-        secret = store.session.query(Secret).filter_by(
-            key=key,
-            used=False,
-        )
-        secret = secret.filter(Secret.expiration > current_time)
-        secret = secret.first()
-        return secret
+@with_store
+def create_secret(info, hours_duration, store=None):
+    secret = Secret.make(info, hours_duration)
+    store.session.add(secret)
+    store.session.commit()
+    return secret
+
+
+@with_store
+def lookup_secret(key, store=None):
+    secret = store.session.query(Secret)
+    secret = secret.filter(Secret.used == False)
+    secret = secret.filter(Secret.expiration > datetime.utcnow())
+    return secret.get(key)
