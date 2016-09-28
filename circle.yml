@@ -1,0 +1,15 @@
+test:
+  override:
+    - ./node_modules/.bin/webpack -p > /dev/null && python -m unittest
+
+machine:
+  python:
+    version: 3.5.0
+  environment:
+    LOGGING_LOCATION: "."
+    WEBPACK_MANIFEST_PATH: "$HOME/communityshare/manifest.json"
+    DB_CONNECTION: "sqlite:///:memory:"
+
+dependencies:
+  pre:
+    - "pip3 install -r requirements.txt"
