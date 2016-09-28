@@ -4,6 +4,7 @@ We're working on creating an application to connect educators with community par
 
 See [communityshare.us](http://www.communityshare.us) for more details.
 
+[![Slack Status](https://codefortucson-slackin.herokuapp.com/badge.svg)](https://codefortucson.slack.com)
 [![CircleCI](https://circleci.com/gh/communityshare/communityshare/tree/master.svg?style=svg)](https://circleci.com/gh/communityshare/communityshare/tree/master)
 [![Code Climate](https://codeclimate.com/github/communityshare/communityshare/badges/gpa.svg)](https://codeclimate.com/github/communityshare/communityshare)
 [![Issue Count](https://codeclimate.com/github/communityshare/communityshare/badges/issue_count.svg)](https://codeclimate.com/github/communityshare/communityshare)
