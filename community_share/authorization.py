@@ -67,7 +67,7 @@ def user_from_login(email: str, password: str, store: Store=None) -> Optional[Us
     user = user.filter_by(email=email, active=True)
     user = user.first()
 
-    if user is None
+    if user is None:
         return None
 
     if not user.is_password_correct(password):
