@@ -47,7 +47,11 @@ def user_from_api_key(key: str, store: Store=None) -> Optional[User]:
     if info.get('action') != 'api_key':
         return None
 
-    return store.session.query(User).get(info.get('userId'))
+    query = store.session.query(User)
+    query = query.filter(User.id == info.get('userId'))
+    query = query.fitler(User.active == True)
+
+    return query.first()
 
 
 @with_store
@@ -62,6 +66,9 @@ def user_from_login(email: str, password: str, store: Store=None) -> Optional[Us
     user = store.session.query(User)
     user = user.filter_by(email=email, active=True)
     user = user.first()
+
+    if user is None
+        return None
 
     if not user.is_password_correct(password):
         return None
