@@ -1,0 +1,8 @@
+exclude_paths:
+  - "node_modules/"
+  - "static/build/"
+  - "static/fonts/"
+  - "static/js/bootstrap.js"
+  - "static/js/lib/"
+  - "scripts/"
+  - "update_scripts/"
