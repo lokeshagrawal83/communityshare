@@ -64,7 +64,8 @@ def user_from_login(email: str, password: str, store: Store=None) -> Optional[Us
     :return: found user or None
     """
     user = store.session.query(User)
-    user = user.filter_by(email=email, active=True)
+    user = user.filter(User.email == email)
+    user = user.filter(User.active == True)
     user = user.first()
 
     if user is None:
