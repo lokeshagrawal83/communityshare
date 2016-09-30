@@ -37,7 +37,7 @@ def user_from_api_key(key: str, store: Store=None) -> Optional[User]:
     :param store: connection to database
     :return: found user or None
     """
-    secret = lookup_secret(key)
+    secret = lookup_secret(key, store=store)
 
     if secret is None:
         return None
