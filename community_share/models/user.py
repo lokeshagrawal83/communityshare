@@ -123,6 +123,10 @@ class User(Base, Serializable):
     gender = Column(String(100))
     ethnicity = Column(String(100))
 
+    __table_args__ = (
+        UniqueConstraint('email'),
+    )
+
     searches = relationship(
         "Search",
         primaryjoin="Search.searcher_user_id == User.id",
@@ -145,10 +149,6 @@ class User(Base, Serializable):
         default='sha512_crypt',
         all__vary_rounds=0.1,
         sha512_crypt__vary_rounds=8000,
-    )
-
-    __table_args__ = (
-        UniqueConstraint('email'),
     )
 
     def searches_as(self, role):
