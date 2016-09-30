@@ -1,3 +1,24 @@
+engines:
+  eslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - python
+  radon:
+    enabled: true
+  fixme:
+    enabled: true
+  pep8:
+    enabled: true
+
+ratings:
+  paths:
+    - "**.py"
+    - "**.js"
+
 exclude_paths:
   - "node_modules/"
   - "static/build/"
