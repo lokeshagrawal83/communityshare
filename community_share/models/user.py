@@ -5,7 +5,7 @@ import io
 
 from sqlalchemy import Column, Integer, String, DateTime, \
     Boolean, and_, or_, update
-from sqlalchemy import ForeignKey, CheckConstraint
+from sqlalchemy import ForeignKey, CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import relationship, backref, validates
 
 import passlib
@@ -147,14 +147,9 @@ class User(Base, Serializable):
         sha512_crypt__vary_rounds=8000,
     )
 
-    @validates('email')
-    def validate_email(self, key, email):
-        my_id = self.id
-        # Check if the email is being used by any active users.
-        users = store.session.query(User).filter_by(email=email, active=True).filter(id != my_id)
-        if users.count() > 0:
-            raise ValidationException('That email is already being used.')
-        return email
+    __table_args__ = (
+        UniqueConstraint('email'),
+    )
 
     def searches_as(self, role):
         searches = store.session.query(Search)
