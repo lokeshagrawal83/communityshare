@@ -49,7 +49,7 @@ def user_from_api_key(key: str, store: Store=None) -> Optional[User]:
 
     query = store.session.query(User)
     query = query.filter(User.id == info.get('userId'))
-    query = query.fitler(User.active == True)
+    query = query.filter(User.active == True)
 
     return query.first()
 
