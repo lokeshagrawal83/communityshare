@@ -5,7 +5,7 @@ import io
 
 from sqlalchemy import Column, Integer, String, DateTime, \
     Boolean, and_, or_, update
-from sqlalchemy import ForeignKey, CheckConstraint, UniqueConstraint
+from sqlalchemy import ForeignKey, CheckConstraint
 from sqlalchemy.orm import relationship, backref, validates
 
 import passlib
@@ -100,7 +100,7 @@ class User(Base, Serializable):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
-    email = Column(String(50), nullable=False)
+    email = Column(String(50), unique=True, nullable=False)
     email_confirmed = Column(Boolean, nullable=False, default=True)
     active = Column(Boolean, default=True)
     password_hash = Column(String(120), nullable=True)
@@ -122,10 +122,6 @@ class User(Base, Serializable):
     year_of_birth = Column(Integer)
     gender = Column(String(100))
     ethnicity = Column(String(100))
-
-    __table_args__ = (
-        UniqueConstraint('email'),
-    )
 
     searches = relationship(
         "Search",
