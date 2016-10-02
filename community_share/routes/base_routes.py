@@ -1,21 +1,14 @@
 import logging
+from functools import wraps
 
 from flask import jsonify, request, Blueprint
 
-from sqlalchemy import Boolean
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from sqlalchemy.orm.attributes import instance_state
 
 from community_share import store
 from community_share.utils import StatusCodes, is_integer
 from community_share.authorization import get_requesting_user
 from community_share.models.base import ValidationException
-
-logger = logging.getLogger(__name__)
-
-API_MANY_FORMAT = '/api/{0}'
-API_SINGLE_FORMAT = '/api/{0}/<id>'
-API_PAGINATION_FORMAT = '/api/{0}/<id>/<page>'
 
 
 def make_not_authorized_response():
@@ -94,146 +87,182 @@ def make_single_response(requester, item, include_user=None):
     return response
 
 
-def make_blueprint(Item, resourceName):
-
-    api = Blueprint(resourceName, __name__)
-
-    @api.route(API_MANY_FORMAT.format(resourceName), methods=['GET'])
-    def get_items():
-        logger.debug('get_items - {0}'.format(resourceName))
-        requester = get_requesting_user()
-        if requester is None and not Item.PERMISSIONS.get('all_can_read_many', False):
-            response = make_not_authorized_response()
-        else:
-            if requester is None or not requester.is_administrator:
-                if (Item.PERMISSIONS.get('standard_can_read_many', False) or
-                    Item.PERMISSIONS.get('all_can_read_many', False)):
-                    try:
-                        query = Item.args_to_query(request.args, requester)
-                        if query is None:
-                            response = make_forbidden_response()
-                        else:
-                            items = query.all()
-                            response = make_many_response(requester, items)
-                    except ValueError as e:
-                        error_message = ', '.join(e.args)
-                        response = make_bad_request_response(e.args[0])
-                else:
-                    response = make_forbidden_response()
-            else:
+def get_items(base_class, request=request):
+    requester = get_requesting_user()
+    if requester is None and not base_class.PERMISSIONS.get('all_can_read_many', False):
+        response = make_not_authorized_response()
+    else:
+        if requester is None or not requester.is_administrator:
+            if (base_class.PERMISSIONS.get('standard_can_read_many', False) or
+                base_class.PERMISSIONS.get('all_can_read_many', False)):
                 try:
-                    query = Item.args_to_query(request.args, requester)
-                    items = query.all()
-                    response = make_many_response(requester, items)
+                    query = base_class.args_to_query(request.args, requester)
+                    if query is None:
+                        response = make_forbidden_response()
+                    else:
+                        items = query.all()
+                        response = make_many_response(requester, items)
                 except ValueError as e:
                     error_message = ', '.join(e.args)
                     response = make_bad_request_response(e.args[0])
-        return response
-
-    @api.route(API_SINGLE_FORMAT.format(resourceName), methods=['GET'])
-    def get_item(id):
-        requester = get_requesting_user()
-        if requester is None:
-            response = make_not_authorized_response()
-        elif not is_integer(id):
-            response = make_bad_request_user()
-        else:
-            item = store.session.query(Item).filter_by(id=id, active=True).first()
-            if item is None:
-                response = make_not_found_response()
             else:
-                response = make_single_response(requester, item)
-        return response
-
-    @api.route(API_MANY_FORMAT.format(resourceName), methods=['POST'])
-    def add_item():
-        requester = get_requesting_user()
-        logger.debug('add_item: requester = {0}'.format(requester))
-        data = request.json
-        if not Item.has_add_rights(data, requester):
-            if requester is None:
-                logger.debug('not authorized')
-                response = make_not_authorized_response()
-            else:
-                logger.debug('forbidden')
                 response = make_forbidden_response()
         else:
-            logger.debug('data send is {0}'.format(data))
             try:
-                item = Item.admin_deserialize_add(data)
-                store.session.add(item)
-                store.session.commit()
-                refreshed_item = store.session.query(Item).filter_by(id=item.id).first()
-                refreshed_item.on_add(requester)
-                # commit again in case on_add changed it.
-                store.session.commit()
-                # and refresh again to update relationships
-                refreshed_item = store.session.query(Item).filter_by(id=item.id).first()
-                response = make_single_response(requester, refreshed_item, include_user=requester)
-            except ValidationException as e:
-                response = make_bad_request_response(str(e))
-            except (IntegrityError, InvalidRequestError) as e:
-                if len(e.args) > 0:
-                    message = e.args[0]
-                else:
-                    message = ''
-                response = make_bad_request_response(message)
-        return response
+                query = base_class.args_to_query(request.args, requester)
+                items = query.all()
+                response = make_many_response(requester, items)
+            except ValueError as e:
+                error_message = ', '.join(e.args)
+                response = make_bad_request_response(e.args[0])
+    return response
 
-    @api.route(API_SINGLE_FORMAT.format(resourceName), methods=['PATCH', 'PUT'])
-    def edit_item(id):
-        requester = get_requesting_user()
+
+def get_item(id, base_class):
+    requester = get_requesting_user()
+    if requester is None:
+        response = make_not_authorized_response()
+    elif not is_integer(id):
+        response = make_bad_request_response()
+    else:
+        item = store.session.query(base_class).filter_by(id=id, active=True).first()
+        if item is None:
+            response = make_not_found_response()
+        else:
+            response = make_single_response(requester, item)
+    return response
+
+
+def add_item(base_class, request=request):
+    requester = get_requesting_user()
+    data = request.json
+    if not base_class.has_add_rights(data, requester):
         if requester is None:
             response = make_not_authorized_response()
-        elif not is_integer(id):
-            response = make_bad_request_response()
         else:
-            id = int(id)
-            data = request.json
-            data_id = data.get('id', None)
-            if data_id is not None and int(data_id) != id:
-                response = make_bad_request_response()
+            response = make_forbidden_response()
+    else:
+        try:
+            item = base_class.admin_deserialize_add(data)
+            store.session.add(item)
+            store.session.commit()
+            refreshed_item = store.session.query(base_class).filter_by(id=item.id).first()
+            refreshed_item.on_add(requester)
+            # commit again in case on_add changed it.
+            store.session.commit()
+            # and refresh again to update relationships
+            refreshed_item = store.session.query(base_class).filter_by(id=item.id).first()
+            response = make_single_response(requester, refreshed_item, include_user=requester)
+        except ValidationException as e:
+            response = make_bad_request_response(str(e))
+        except (IntegrityError, InvalidRequestError) as e:
+            if len(e.args) > 0:
+                message = e.args[0]
             else:
-                if id is None:
-                    item = None
-                else:
-                    item = store.session.query(Item).filter_by(id=id).first()
-                if item is None:
-                    response = make_not_found_response()
-                else:
-                    if item.has_admin_rights(requester):
-                        try:
-                            item.admin_deserialize_update(data)
-                            store.session.add(item)
-                            logger.debug('calling on_edit on {0}'.format(item))
-                            item.on_edit(requester, unchanged=not store.session.dirty)
-                            store.session.commit()
-                            response = make_single_response(requester, item)
-                        except ValidationException as e:
-                            response = make_bad_request_response(str(e))
-                    else:
-                        response = make_forbidden_response()
-        return response
+                message = ''
+            response = make_bad_request_response(message)
+    return response
 
-    @api.route(API_SINGLE_FORMAT.format(resourceName), methods=['DELETE'])
-    def delete_item(id):
-        requester = get_requesting_user()
-        if requester is None:
-            response = make_not_authorized_response()
-        elif not is_integer(id):
+
+def edit_item(id, base_class, request=request):
+    requester = get_requesting_user()
+    if requester is None:
+        response = make_not_authorized_response()
+    elif not is_integer(id):
+        response = make_bad_request_response()
+    else:
+        id = int(id)
+        data = request.json
+        data_id = data.get('id', None)
+        if data_id is not None and int(data_id) != id:
             response = make_bad_request_response()
         else:
-            id = int(id)
-            item = store.session.query(Item).filter_by(id=id).first()
+            if id is None:
+                item = None
+            else:
+                item = store.session.query(base_class).filter_by(id=id).first()
             if item is None:
                 response = make_not_found_response()
             else:
-                if item.has_delete_rights(requester):
-                    item.delete(requester)
-                    store.session.commit()
-                    response = make_single_response(requester, item)
+                if item.has_admin_rights(requester):
+                    try:
+                        item.admin_deserialize_update(data)
+                        store.session.add(item)
+                        item.on_edit(requester, unchanged=not store.session.dirty)
+                        store.session.commit()
+                        response = make_single_response(requester, item)
+                    except ValidationException as e:
+                        response = make_bad_request_response(str(e))
                 else:
                     response = make_forbidden_response()
-        return response
+    return response
+
+
+def delete_item(id, base_class):
+    requester = get_requesting_user()
+    if requester is None:
+        response = make_not_authorized_response()
+    elif not is_integer(id):
+        response = make_bad_request_response()
+    else:
+        id = int(id)
+        item = store.session.query(base_class).filter_by(id=id).first()
+        if item is None:
+            response = make_not_found_response()
+        else:
+            if item.has_delete_rights(requester):
+                item.delete(requester)
+                store.session.commit()
+                response = make_single_response(requester, item)
+            else:
+                response = make_forbidden_response()
+    return response
+
+
+API_MANY_FORMAT = '/api/{0}'
+API_SINGLE_FORMAT = '/api/{0}/<id>'
+API_PAGINATION_FORMAT = '/api/{0}/<id>/<page>'
+
+
+def make_blueprint(base_class, resource_name):
+
+    api = Blueprint(resource_name, __name__)
+
+    def inject_base_class(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            actual_base_class = kwargs.pop('base_class', base_class)
+            return f(*args, base_class=actual_base_class, **kwargs)
+        return wrapped
+
+    api.route(
+        API_MANY_FORMAT.format(resource_name),
+        endpoint='get_many_{}'.format(resource_name),
+        methods=['GET'],
+    )(inject_base_class(get_items))
+
+    api.route(
+        API_SINGLE_FORMAT.format(resource_name),
+        endpoint='get_{}'.format(resource_name),
+        methods=['GET'],
+    )(inject_base_class(get_item))
+
+    api.route(
+        API_MANY_FORMAT.format(resource_name),
+        endpoint='add_{}'.format(resource_name),
+        methods=['POST'],
+    )(inject_base_class(add_item))
+
+    api.route(
+        API_SINGLE_FORMAT.format(resource_name),
+        endpoint='edit_{}'.format(resource_name),
+        methods=['PATCH', 'PUT'],
+    )(inject_base_class(edit_item))
+
+    api.route(
+        API_SINGLE_FORMAT.format(resource_name),
+        endpoint='delete_{}'.format(resource_name),
+        methods=['DELETE'],
+    )(inject_base_class(delete_item))
 
     return api
