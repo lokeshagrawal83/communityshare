@@ -2,9 +2,7 @@ import logging
 
 from flask import jsonify, request, Blueprint
 
-from sqlalchemy import Boolean
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from sqlalchemy.orm.attributes import instance_state
 
 from community_share import store
 from community_share.utils import StatusCodes, is_integer

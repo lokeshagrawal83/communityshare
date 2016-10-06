@@ -1,8 +1,6 @@
 import logging
-import os
 
-from flask import request, jsonify, send_from_directory, make_response
-from werkzeug.utils import secure_filename
+from flask import request, jsonify, make_response
 
 from community_share.models.user import User, UserReview
 from community_share.models.institution import Institution

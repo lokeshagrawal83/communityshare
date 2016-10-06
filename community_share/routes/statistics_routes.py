@@ -1,11 +1,10 @@
 import logging
-import os
 import datetime
 
 from flask import jsonify
 
 from community_share.authorization import get_requesting_user
-from community_share import config, store, time_format
+from community_share import store, time_format
 from community_share.models.statistics import Statistic
 from community_share.routes import base_routes
 
