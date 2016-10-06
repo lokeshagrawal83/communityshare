@@ -25,6 +25,16 @@ YEAR_IN_SECONDS = 31536000
 logger = logging.getLogger(__name__)
 
 
+# Forces Flask functions to return HTTPS links
+def ReverseProxied(app):
+
+    def add_header(environ, start_response):
+        environ['wsgi.url_scheme'] = 'https'
+        return app(environ, start_response)
+
+    return add_header
+
+
 def make_app():
     cors = CORS(origins=[
         'https://app.communityshare.us:443', # production app
@@ -46,6 +56,8 @@ def make_app():
 
     if config.SSL != 'NO_SSL':
         flask_sslify.SSLify(app)
+        app.wsgi_app = ReverseProxied(app.wsgi_app)
+
     register_user_routes(app)
     register_search_routes(app)
     register_conversation_routes(app)
