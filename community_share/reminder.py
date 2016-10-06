@@ -1,6 +1,7 @@
 import logging
 
 from community_share import store, mail_actions
+from community_share.models import conversation
 from community_share.models.share import EventReminder
 
 logger = logging.getLogger(__name__)
