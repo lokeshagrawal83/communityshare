@@ -238,7 +238,7 @@ def gen_random_institution(institutions, roles):
     )
 
 
-def make_random_user():
+def make_random_user(password_hash):
     # Make the user
     first_name, last_name = gen_new_name(user_names_used, first_names, last_names)
 
@@ -246,9 +246,6 @@ def make_random_user():
         return
 
     user_names_used.add((first_name, last_name))
-
-    password = Secret.make_key(20)
-    password_hash = User.pwd_context.encrypt(password)
 
     if random.randint(0, 1):
         searcher_role = 'educator'
@@ -393,8 +390,9 @@ def setup(n_random_users=100):
         make_admin_user(email, email, Secret.make_key(20))
 
     logger.info('Making {0} random users'.format(n_random_users))
+    password_hash = User.pwd_context.encrypt('password')
     for i in range(n_random_users):
-        make_random_user()
+        make_random_user(password_hash=password_hash)
     creator = get_creator()
     logger.info('Creator of questions is {}'.format(creator.email))
     questions = setup_data.get_questions(creator)
