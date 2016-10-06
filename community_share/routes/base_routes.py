@@ -219,10 +219,6 @@ def delete_item(id, base):
     return response
 
 
-API_MANY_FORMAT = '/api/{0}'
-API_SINGLE_FORMAT = '/api/{0}/<id>'
-
-
 def make_blueprint(base, resource_name):
 
     api = Blueprint(resource_name, __name__)
@@ -235,31 +231,31 @@ def make_blueprint(base, resource_name):
         return wrapped
 
     api.route(
-        API_MANY_FORMAT.format(resource_name),
+        '/api/{0}'.format(resource_name),
         endpoint='get_many_{}'.format(resource_name),
         methods=['GET'],
     )(inject_base(get_items))
 
     api.route(
-        API_SINGLE_FORMAT.format(resource_name),
+        '/api/{0}/<id>'.format(resource_name),
         endpoint='get_{}'.format(resource_name),
         methods=['GET'],
     )(inject_base(get_item))
 
     api.route(
-        API_MANY_FORMAT.format(resource_name),
+        '/api/{0}'.format(resource_name),
         endpoint='add_{}'.format(resource_name),
         methods=['POST'],
     )(inject_base(add_item))
 
     api.route(
-        API_SINGLE_FORMAT.format(resource_name),
+        '/api/{0}/<id>'.format(resource_name),
         endpoint='edit_{}'.format(resource_name),
         methods=['PATCH', 'PUT'],
     )(inject_base(edit_item))
 
     api.route(
-        API_SINGLE_FORMAT.format(resource_name),
+        '/api/{0}/<id>'.format(resource_name),
         endpoint='delete_{}'.format(resource_name),
         methods=['DELETE'],
     )(inject_base(delete_item))
