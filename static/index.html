@@ -26,14 +26,7 @@
   </head>
 
   <body>
-
-    <div class="message-container" ng-controller="MessageController">
-      <div alert ng-repeat="alert in messages.messages"
-             class="animated-alert"
-             type="alert.type"
-             close="messages.removeMessage(alert)">
-             {% raw %}{{alert.text}}{% endraw %}</div>
-    </div>
+    <div ng-include src="'/static/templates/alert.html'"></div>
 
     <div class="row" ng-controller="MainController">
       <div ng-view></div>

@@ -1,0 +1,7 @@
+<div class="message-container" ng-controller="MessageController">
+  <div alert ng-repeat="alert in messages.messages"
+         class="animated-alert"
+         type="alert.type"
+         close="messages.removeMessage(alert)">
+         {{alert.text}}</div>
+</div>
