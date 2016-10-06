@@ -4,6 +4,7 @@ import sys
 import time
 
 from community_share import config, app
+import setup_test
 
 
 def wait_for_manifest(path):
@@ -28,6 +29,8 @@ config.load_config('./config.dev.json')
 
 if 'production' == config.APP_ENV:
     sys.exit('Cannot run development app with production config')
+
+setup_test.setup(n_random_users=40)
 
 wait_for_manifest(config.WEBPACK_MANIFEST_PATH)
 
