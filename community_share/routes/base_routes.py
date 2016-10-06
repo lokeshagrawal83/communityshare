@@ -87,16 +87,16 @@ def make_single_response(requester, item, include_user=None):
     return response
 
 
-def get_items(base_class, request=request):
+def get_items(base, request=request):
     requester = get_requesting_user()
-    if requester is None and not base_class.PERMISSIONS.get('all_can_read_many', False):
+    if requester is None and not base.PERMISSIONS.get('all_can_read_many', False):
         response = make_not_authorized_response()
     else:
         if requester is None or not requester.is_administrator:
-            if (base_class.PERMISSIONS.get('standard_can_read_many', False) or
-                base_class.PERMISSIONS.get('all_can_read_many', False)):
+            if (base.PERMISSIONS.get('standard_can_read_many', False) or
+                base.PERMISSIONS.get('all_can_read_many', False)):
                 try:
-                    query = base_class.args_to_query(request.args, requester)
+                    query = base.args_to_query(request.args, requester)
                     if query is None:
                         response = make_forbidden_response()
                     else:
@@ -109,7 +109,7 @@ def get_items(base_class, request=request):
                 response = make_forbidden_response()
         else:
             try:
-                query = base_class.args_to_query(request.args, requester)
+                query = base.args_to_query(request.args, requester)
                 items = query.all()
                 response = make_many_response(requester, items)
             except ValueError as e:
@@ -118,14 +118,14 @@ def get_items(base_class, request=request):
     return response
 
 
-def get_item(id, base_class):
+def get_item(id, base):
     requester = get_requesting_user()
     if requester is None:
         response = make_not_authorized_response()
     elif not is_integer(id):
         response = make_bad_request_response()
     else:
-        item = store.session.query(base_class).filter_by(id=id, active=True).first()
+        item = store.session.query(base).filter_by(id=id, active=True).first()
         if item is None:
             response = make_not_found_response()
         else:
@@ -133,25 +133,25 @@ def get_item(id, base_class):
     return response
 
 
-def add_item(base_class, request=request):
+def add_item(base, request=request):
     requester = get_requesting_user()
     data = request.json
-    if not base_class.has_add_rights(data, requester):
+    if not base.has_add_rights(data, requester):
         if requester is None:
             response = make_not_authorized_response()
         else:
             response = make_forbidden_response()
     else:
         try:
-            item = base_class.admin_deserialize_add(data)
+            item = base.admin_deserialize_add(data)
             store.session.add(item)
             store.session.commit()
-            refreshed_item = store.session.query(base_class).filter_by(id=item.id).first()
+            refreshed_item = store.session.query(base).filter_by(id=item.id).first()
             refreshed_item.on_add(requester)
             # commit again in case on_add changed it.
             store.session.commit()
             # and refresh again to update relationships
-            refreshed_item = store.session.query(base_class).filter_by(id=item.id).first()
+            refreshed_item = store.session.query(base).filter_by(id=item.id).first()
             response = make_single_response(requester, refreshed_item, include_user=requester)
         except ValidationException as e:
             response = make_bad_request_response(str(e))
@@ -164,7 +164,7 @@ def add_item(base_class, request=request):
     return response
 
 
-def edit_item(id, base_class, request=request):
+def edit_item(id, base, request=request):
     requester = get_requesting_user()
     if requester is None:
         response = make_not_authorized_response()
@@ -180,7 +180,7 @@ def edit_item(id, base_class, request=request):
             if id is None:
                 item = None
             else:
-                item = store.session.query(base_class).filter_by(id=id).first()
+                item = store.session.query(base).filter_by(id=id).first()
             if item is None:
                 response = make_not_found_response()
             else:
@@ -198,7 +198,7 @@ def edit_item(id, base_class, request=request):
     return response
 
 
-def delete_item(id, base_class):
+def delete_item(id, base):
     requester = get_requesting_user()
     if requester is None:
         response = make_not_authorized_response()
@@ -206,7 +206,7 @@ def delete_item(id, base_class):
         response = make_bad_request_response()
     else:
         id = int(id)
-        item = store.session.query(base_class).filter_by(id=id).first()
+        item = store.session.query(base).filter_by(id=id).first()
         if item is None:
             response = make_not_found_response()
         else:
@@ -224,45 +224,45 @@ API_SINGLE_FORMAT = '/api/{0}/<id>'
 API_PAGINATION_FORMAT = '/api/{0}/<id>/<page>'
 
 
-def make_blueprint(base_class, resource_name):
+def make_blueprint(base, resource_name):
 
     api = Blueprint(resource_name, __name__)
 
-    def inject_base_class(f):
+    def inject_base(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            actual_base_class = kwargs.pop('base_class', base_class)
-            return f(*args, base_class=actual_base_class, **kwargs)
+            actual_base = kwargs.pop('base', base)
+            return f(*args, base=actual_base, **kwargs)
         return wrapped
 
     api.route(
         API_MANY_FORMAT.format(resource_name),
         endpoint='get_many_{}'.format(resource_name),
         methods=['GET'],
-    )(inject_base_class(get_items))
+    )(inject_base(get_items))
 
     api.route(
         API_SINGLE_FORMAT.format(resource_name),
         endpoint='get_{}'.format(resource_name),
         methods=['GET'],
-    )(inject_base_class(get_item))
+    )(inject_base(get_item))
 
     api.route(
         API_MANY_FORMAT.format(resource_name),
         endpoint='add_{}'.format(resource_name),
         methods=['POST'],
-    )(inject_base_class(add_item))
+    )(inject_base(add_item))
 
     api.route(
         API_SINGLE_FORMAT.format(resource_name),
         endpoint='edit_{}'.format(resource_name),
         methods=['PATCH', 'PUT'],
-    )(inject_base_class(edit_item))
+    )(inject_base(edit_item))
 
     api.route(
         API_SINGLE_FORMAT.format(resource_name),
         endpoint='delete_{}'.format(resource_name),
         methods=['DELETE'],
-    )(inject_base_class(delete_item))
+    )(inject_base(delete_item))
 
     return api
