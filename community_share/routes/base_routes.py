@@ -221,7 +221,6 @@ def delete_item(id, base):
 
 API_MANY_FORMAT = '/api/{0}'
 API_SINGLE_FORMAT = '/api/{0}/<id>'
-API_PAGINATION_FORMAT = '/api/{0}/<id>/<page>'
 
 
 def make_blueprint(base, resource_name):
