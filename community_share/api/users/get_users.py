@@ -6,9 +6,9 @@ from flask import jsonify, request, Response
 
 from sqlalchemy import true, false
 
-from community_share import Store
+from community_share import Store, with_store
 from community_share.app_exceptions import BadRequest
-from community_share.flask_helpers import api_path, needs_auth, serialize_many, with_store
+from community_share.flask_helpers import api_path, needs_auth, serialize_many
 from community_share.models.institution import Institution, InstitutionAssociation
 from community_share.models.user import User
 from community_share.utils import clamped, int_or

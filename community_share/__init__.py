@@ -3,6 +3,9 @@ import logging
 import json
 import sys
 
+from functools import wraps
+from typing import Any, Callable
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
@@ -62,6 +65,35 @@ class Store(object):
 
 
 store = Store()
+
+
+def with_store(f: Callable[..., Any]) -> Callable[..., Any]:
+    """Provides the SqlAlchemy store to a function
+
+    Use this instead of importing `communityshare.store`
+    directly in order to make testing easy
+
+    **Example**
+    This creates a new in-memory store for testing
+
+    .. sourcecode Python
+
+       class Store():
+          engine = create_engine('sqlite:///:memory:')
+          Session = sessionmaker(bind=engine)
+          session = Session()
+
+       normally_wrapped_function(store=Store())
+
+    :param f: function to wrap
+    :return: new function with `store` param injected
+    """
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        actual_store = kwargs.pop('store', store)
+        return f(*args, store=actual_store, **kwargs)
+
+    return wrapped
 
 
 class Config(object):

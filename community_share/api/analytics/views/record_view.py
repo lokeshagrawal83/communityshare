@@ -2,7 +2,8 @@ from http import HTTPStatus
 
 from flask import request
 
-from community_share.flask_helpers import needs_auth, with_store
+from community_share import with_store
+from community_share.flask_helpers import needs_auth
 from community_share.models.analytics import PageView
 from community_share.routes.base_routes import make_bad_request_response
 

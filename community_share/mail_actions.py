@@ -5,7 +5,7 @@ from datetime import datetime
 import jinja2
 
 from community_share.models.user import User
-from community_share.models.secret import Secret
+from community_share.models.secret import create_secret, lookup_secret
 from community_share import mail, config, store, time_format
 
 logger = logging.getLogger(__name__)
@@ -365,7 +365,7 @@ def request_signup_email_confirmation(user, template=None, subject=None):
         'action': 'email_confirmation',
     }
     hours_duration = 24 * 14
-    secret = Secret.create_secret(secret_info, hours_duration)
+    secret = create_secret(secret_info, hours_duration)
     url = '{BASEURL}/#/confirmemail?key={secret_key}'.format(
         BASEURL=config.BASEURL,
         secret_key=secret.key,
@@ -399,7 +399,7 @@ def request_password_reset(user):
         'action': 'password_reset',
     }
     hours_duration = 48
-    secret = Secret.create_secret(secret_info, hours_duration)
+    secret = create_secret(secret_info, hours_duration)
     url = '{BASEURL}/#/resetpassword?key={secret_key}'.format(
         BASEURL=config.BASEURL,
         secret_key=secret.key,
@@ -428,7 +428,7 @@ def process_password_reset(secret_key, new_password):
     user = None
     error_messages = User.is_password_valid(new_password)
     if not error_messages:
-        secret = Secret.lookup_secret(secret_key)
+        secret = lookup_secret(secret_key)
         error_message = ''
         if secret is not None:
             secret_info = secret.get_info()
@@ -451,7 +451,7 @@ def process_password_reset(secret_key, new_password):
 def process_confirm_email(secret_key):
     error_messages = []
     user = None
-    secret = Secret.lookup_secret(secret_key)
+    secret = lookup_secret(secret_key)
     if secret is not None:
         secret_info = secret.get_info()
         userId = secret_info.get('userId', None)
