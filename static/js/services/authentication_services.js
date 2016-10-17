@@ -63,7 +63,7 @@ module.factory(
 		};
 
 		Authenticator.authenticateFromCookie = function() {
-			if( ! $cookies.id || ! $cookies.apiKey ) {
+			if ( ! $cookies.id || ! $cookies.apiKey ) {
 				Authenticator.clean();
 				return $q.reject( 'No cookie' );
 			}
