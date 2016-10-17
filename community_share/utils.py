@@ -1,5 +1,4 @@
 class StatusCodes(object):
-    NOT_AUTHORIZED = 401
     OK = 200
     FORBIDDEN = 403
     NOT_FOUND = 404

@@ -1,7 +1,8 @@
 import logging
 
-from flask import request, jsonify, make_response
+from flask import Response, request, jsonify, make_response
 
+from community_share.flask_helpers import needs_admin_auth
 from community_share.models.user import User, UserReview
 from community_share.models.institution import Institution
 from community_share.authorization import get_requesting_user
@@ -215,7 +216,8 @@ def register_user_routes(app):
         User.activate_email()
 
     @app.route('/api/dump_csv', methods=['GET'])
-    def dump_csv():
+    @needs_admin_auth()
+    def dump_csv(requester: User) -> Response:
         csv_obj = User.dump_csv()
         response = make_response(csv_obj.getvalue())
         response.headers["Content-Type"] = "text/csv"

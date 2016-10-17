@@ -1,4 +1,5 @@
 import logging
+from http import HTTPStatus
 
 from flask import jsonify, request, Blueprint
 
@@ -19,7 +20,7 @@ API_PAGINATION_FORMAT = '/api/{0}/<id>/<page>'
 def make_not_authorized_response():
     response_data = {'message': 'Authorization failed'}
     response = jsonify(response_data)
-    response.status_code = StatusCodes.NOT_AUTHORIZED
+    response.status_code = HTTPStatus.UNAUTHORIZED
     return response
 
 
