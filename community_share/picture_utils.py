@@ -3,6 +3,8 @@ import imghdr
 
 from community_share.s3_connection import save_file_to_s3
 
+allowable_types = ['gif', 'jpeg', 'png']
+
 
 def get_image_type(image_data):
     return imghdr.what('ignored', h=image_data)
@@ -21,7 +23,7 @@ def image_to_user_filename(image_data, user_id):
 def is_allowable_image(image_data):
     # _not_ extensions, but types from imghdr
     # if unrecognized, type will be None
-    return get_image_type(image_data) in ['gif', 'jpeg', 'png']
+    return get_image_type(image_data) in allowable_types
 
 
 def store_image(src_filename, dst_filename):

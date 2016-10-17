@@ -2,11 +2,13 @@ import logging
 
 from flask import Response, request, jsonify, make_response
 
-from community_share.flask_helpers import needs_admin_auth
+from community_share.app_exceptions import FileTypeNotImplemented, FileTypeNotPermitted
+from community_share.flask_helpers import needs_admin_auth, needs_auth
 from community_share.models.user import User, UserReview
 from community_share.models.institution import Institution
 from community_share.authorization import get_requesting_user
 from community_share import mail_actions
+from community_share.picture_utils import allowable_types as picture_types, get_image_type
 from community_share.routes import base_routes
 from community_share import store
 from community_share.models.base import ValidationException
@@ -185,26 +187,43 @@ def register_user_routes(app):
         return response
 
     @app.route('/api/user/<int:user_id>/picture', methods=['PUT', 'POST', 'PATCH'])
-    def post_picture(user_id):
-        user = get_requesting_user()
-
-        if user_id != user.id:
+    @needs_auth()
+    def post_picture(user_id: int, requester: User) -> Response:
+        if user_id != requester.id and not requester.is_administrator:
             return base_routes.make_not_authorized_response()
 
         image_file = request.files['file']
         if not image_file:
-            return base_routes.make_bad_request_response('missing image data')
+            raise FileTypeNotImplemented(
+                'Missing image data. Request needs to provide binary\n'
+                'image data as the request parameter named "file".'
+            )
 
         image_data = image_file.read()
         if not is_allowable_image(image_data):
-            return base_routes.make_bad_request_response('unallowed image type')
+            image_type = get_image_type(image_data)
+
+            if image_type is None:
+                reason = 'Could not infer type of image.'
+            else:
+                reason = 'Inferred image type {} is not allowed.'
+                reason = reason.format(image_type)
+
+            raise FileTypeNotPermitted(
+                '{reason}\n\n'
+                'Allowable types are {types}.'
+                .format(
+                    reason=reason,
+                    types=', '.join(picture_types),
+                )
+            )
 
         filename = image_to_user_filename(image_data, user_id)
 
         store_image(image_file, filename)
 
-        user.picture_filename = filename
-        store.session.add(user)
+        requester.picture_filename = filename
+        store.session.add(requester)
         store.session.commit()
 
         logger.info('Saving image {!r}'.format(filename))

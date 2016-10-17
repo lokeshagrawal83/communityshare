@@ -43,7 +43,7 @@ def make_bad_request_response(message=None):
         message = 'Bad request'
     response_data = {'message': message}
     response = jsonify(response_data)
-    response.status_code = StatusCodes.BAD_REQUEST
+    response.status_code = HTTPStatus.BAD_REQUEST
     return response
 
 
@@ -52,7 +52,7 @@ def make_OK_response(message=None):
         message = 'OK'
     response_data = {'message': message}
     response = jsonify(response_data)
-    response.status_code = StatusCodes.OK
+    response.status_code = HTTPStatus.OK
     return response
 
 
