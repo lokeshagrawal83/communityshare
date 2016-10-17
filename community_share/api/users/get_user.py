@@ -10,7 +10,7 @@ from community_share.utils import int_or
 
 
 @needs_auth()
-def endpoint(requester: User, user_id: int) -> Response:
+def endpoint(user_id: int, requester: User) -> Response:
     """ User Endpoint
 
     http:get:: /rest/users/<user_id:int>

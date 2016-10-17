@@ -25,7 +25,7 @@ def needs_auth(auth_level='user'):
     def needs_auth_decorator(f):
         @wraps(f)
         def auth_check(*args, **kwargs):
-            user = get_requesting_user()
+            user = kwargs.pop('requester', get_requesting_user())
 
             if user is None:
                 return base_routes.make_not_authorized_response()
