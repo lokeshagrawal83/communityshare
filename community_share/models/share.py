@@ -1,17 +1,14 @@
 import logging
 from datetime import datetime, timedelta
-import pytz
 
-from sqlalchemy import Table, ForeignKey, DateTime, Column
-from sqlalchemy import Integer, String, Boolean, Float
+from sqlalchemy import ForeignKey, DateTime, Column
+from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import relationship, validates
-from sqlalchemy.sql.expression import func
-from sqlalchemy import or_, and_
+from sqlalchemy import or_
 
 from community_share import time_format, mail_actions
 from community_share import store, Base, config
 from community_share.models.base import Serializable, ValidationException
-from community_share.models import survey
 
 logger = logging.getLogger(__name__)
 

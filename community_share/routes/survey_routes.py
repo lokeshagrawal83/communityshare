@@ -1,5 +1,3 @@
-from flask import jsonify
-
 from community_share.models.survey import Question, Answer
 from community_share.routes import base_routes
 

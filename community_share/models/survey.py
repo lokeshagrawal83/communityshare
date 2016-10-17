@@ -3,7 +3,7 @@ import logging
 import json
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
-from sqlalchemy import ForeignKey, CheckConstraint
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from community_share import Base

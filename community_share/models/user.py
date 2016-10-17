@@ -4,12 +4,11 @@ import csv
 import io
 
 from sqlalchemy import Column, Integer, String, DateTime, \
-    Boolean, and_, or_, update
+    Boolean, and_, or_
 from sqlalchemy import ForeignKey, CheckConstraint
-from sqlalchemy.orm import relationship, backref, validates
+from sqlalchemy.orm import relationship, validates
 
-import passlib
-from passlib import context
+from passlib.context import CryptContext
 
 from community_share import store, Base, config
 from community_share.models.base import Serializable, ValidationException
@@ -140,7 +139,7 @@ class User(Base, Serializable):
         foreign_keys="User.community_partner_profile_search_id",
     )
 
-    pwd_context = passlib.context.CryptContext(
+    pwd_context = CryptContext(
         schemes=['sha512_crypt'],
         default='sha512_crypt',
         all__vary_rounds=0.1,

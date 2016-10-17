@@ -1,6 +1,4 @@
-import re
 import logging
-import hashlib, hmac
 
 from flask import request
 

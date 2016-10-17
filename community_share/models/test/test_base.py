@@ -1,9 +1,5 @@
 import unittest
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer
-
 from community_share.models.base import Serializable
 
 
