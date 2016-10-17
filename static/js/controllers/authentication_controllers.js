@@ -80,7 +80,7 @@ module.controller(
 
 module.controller(
 'DefaultController',
-['$scope', 'user', '$location', 'User', 'signUp', 'Messages', '$modal', 'support', function( $scope, user, $location, User, signUp, Messages, $modal, support ) {
+['$scope', 'user', '$location', 'User', 'Messages', '$modal', 'support', 'Authenticator', function( $scope, user, $location, User, Messages, $modal, support, Authenticator ) {
     $scope.support = support;
     if ( user ) {
         if ( user.accountCreationStatus === 'choice' ) {
@@ -104,7 +104,7 @@ module.controller(
     $scope.user_type = {value: ''};
     $scope.completeSplash = function() {
         $scope.newUser.name = $scope.newUser.firstName + ' ' + $scope.newUser.lastName;
-        var userPromise = signUp( $scope.newUser, $scope.newUser.password );
+        var userPromise = Authenticator.signUp( $scope.newUser, $scope.newUser.password );
         userPromise.then(
       function() {
           $scope.errorMessage = '';

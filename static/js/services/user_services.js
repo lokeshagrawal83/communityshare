@@ -10,41 +10,6 @@ var module = angular.module(
     ] );
 
 module.factory(
-'signUp',
-['$q', '$http', 'User', 'Authenticator', 'Session', 'Messages', function( $q, $http, User, Authenticator, Session, Messages ) {
-    var signUp = function( user, password ) {
-        var deferred = $q.defer();
-        var dataPromise = $http( {
-            method: 'POST',
-            url: '/api/usersignup',
-            data: {
-                'user': user.toData(),
-                'password': password
-            }} );
-        Session.clearUser();
-        dataPromise.then(
-      function( response ) {
-          var user = User.make( response.data.data );
-          Authenticator.setApiKey( response.data.apiKey );
-          Authenticator.setEmail( user.email );
-          if ( user.warningMessage ) {
-              Messages.error( 'Failed to send email to confirm address.' );
-          }
-          Session.setUser( user );
-          user.updateUnviewedConversations();
-          deferred.resolve( user );
-      },
-      function( response ) {
-          Session.setUser( undefined );
-          deferred.reject( response.data.message );
-      }
-    );
-        return deferred.promise;
-    };
-    return signUp;
-}] );
-
-module.factory(
 'UserBase',
 ['itemFactory', function( itemFactory ) {
     var UserBase = itemFactory( 'user' );
@@ -202,24 +167,6 @@ module.factory(
         };
         this.institution_associations.push( ia );
         this.addInstitutionAssociationRemoveMethod( ia );
-    };
-
-    UserBase.getByEmail = function( email ) {
-        var deferred = $q.defer();
-        var dataPromise = $http( {
-            method: 'GET',
-            url: '/api/userbyemail/' + email
-        } );
-        dataPromise.then(
-      function( data ) {
-          var user = UserBase.make( data.data.data );
-          deferred.resolve( user );
-      },
-      function( response ) {
-          deferred.reject( response.message );
-      }
-    );
-        return deferred.promise;
     };
 
     UserBase.prototype.getSearches = function() {

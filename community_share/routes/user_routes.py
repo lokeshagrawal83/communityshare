@@ -3,16 +3,17 @@ import logging
 from flask import Response, request, jsonify, make_response
 
 from community_share.app_exceptions import FileTypeNotImplemented, FileTypeNotPermitted
-from community_share.flask_helpers import needs_admin_auth, needs_auth
+from community_share import mail_actions, store
+from community_share.flask_helpers import needs_admin_auth, needs_auth, serialize
 from community_share.models.user import User, UserReview
 from community_share.models.institution import Institution
 from community_share.authorization import get_requesting_user
-from community_share import mail_actions
 from community_share.picture_utils import allowable_types as picture_types, get_image_type
-from community_share.routes import base_routes
-from community_share import store
 from community_share.models.base import ValidationException
+from community_share.models.institution import Institution
+from community_share.models.user import User, UserReview
 from community_share.picture_utils import image_to_user_filename, is_allowable_image, store_image
+from community_share.routes import base_routes
 
 logger = logging.getLogger(__name__)
 
@@ -68,28 +69,6 @@ def register_user_routes(app):
                 response = base_routes.make_bad_request_response(str(e))
         return response
 
-    @app.route('/api/userbyemail/<string:email>', methods=['GET'])
-    def userbyemail(email):
-        requester = get_requesting_user()
-        if requester is None:
-            response = base_routes.make_not_authorized_response()
-        elif requester.email != email:
-            response = base_routes.make_forbidden_response()
-        else:
-            users = store.session.query(User).filter(User.email == email, User.active == True).all()
-            if len(users) > 1:
-                logger.error('More than one active user with the same email - {}'.format(email))
-                user = users[0]
-            elif len(users) == 0:
-                user = None
-            else:
-                user = users[0]
-            if user is None:
-                response = base_routes.make_not_found_response()
-            else:
-                response = base_routes.make_single_response(requester, user)
-        return response
-
     @app.route('/api/requestresetpassword/<string:email>', methods=['GET'])
     def request_reset_password(email):
         user = store.session.query(User).filter_by(email=email, active=True).first()
@@ -104,15 +83,12 @@ def register_user_routes(app):
         return response
 
     @app.route('/api/requestapikey', methods=['GET'])
-    def request_api_key():
-        requester = get_requesting_user()
-        if requester is None:
-            response = base_routes.make_not_authorized_response()
-        else:
-            secret = requester.make_api_key()
-            response_data = {'apiKey': secret.key}
-            response = jsonify(response_data)
-        return response
+    @needs_auth()
+    def request_api_key(requester: User) -> Response:
+        return jsonify({
+            'apiKey': requester.make_api_key().key,
+            'user': serialize(requester, requester),
+        })
 
     @app.route('/api/resetpassword', methods=['POST'])
     def reset_password():

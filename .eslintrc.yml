@@ -13,6 +13,9 @@ plugins:
 globals:
   google: true
 rules:
+  comma-dangle:
+    - 2
+    - always-multiline
   indent:
     - 2
     - tab
