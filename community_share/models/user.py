@@ -100,7 +100,7 @@ class User(Base, Serializable):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
-    email = Column(String(50), nullable=False)
+    email = Column(String(50), unique=True, nullable=False)
     email_confirmed = Column(Boolean, nullable=False, default=True)
     active = Column(Boolean, default=True)
     password_hash = Column(String(120), nullable=True)
@@ -146,15 +146,6 @@ class User(Base, Serializable):
         all__vary_rounds=0.1,
         sha512_crypt__vary_rounds=8000,
     )
-
-    @validates('email')
-    def validate_email(self, key, email):
-        my_id = self.id
-        # Check if the email is being used by any active users.
-        users = store.session.query(User).filter_by(email=email, active=True).filter(id != my_id)
-        if users.count() > 0:
-            raise ValidationException('That email is already being used.')
-        return email
 
     def searches_as(self, role):
         searches = store.session.query(Search)
