@@ -71,7 +71,7 @@ class CommunityShareTestCase(unittest.TestCase):
     SQLLITE_FILE = '/tmp/test.db'
 
     def setUp(self):
-        config.load_config('./config.dev.json')
+        config.load_config('./config/config.dev.json')
         config.MAILER_TYPE = 'QUEUE'
         config.DB_CONNECTION = 'sqlite:///{}'.format(self.SQLLITE_FILE)
         # When config.load_config is called, it sets self as the config in the

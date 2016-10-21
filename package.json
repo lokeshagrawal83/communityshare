@@ -21,8 +21,8 @@
   "scripts": {
     "start": "docker-compose stop && docker-compose up",
     "test": "docker-compose run --rm server python -m unittest",
-    "format": "docker-compose run --rm server sh /communityshare/format.sh",
-    "js-lint": "docker-compose run --rm server sh /communityshare/lint.sh"
+    "format": "docker-compose run --rm server sh /communityshare/config/format.sh",
+    "js-lint": "docker-compose run --rm server sh /communityshare/config/lint.sh"
   },
   "repository": {
     "type": "git",

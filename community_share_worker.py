@@ -17,6 +17,6 @@ if __name__ == '__main__':
         pid = str(os.getpid())
         with open(os.path.join(args.pid_dir, 'cs_worker.pid'), 'w') as f:
             f.write(pid)
-    config.load_config('./config.production.json')
+    config.load_config('./config/config.production.json')
     logger.info('Starting community share worker.')
     worker.work_loop()

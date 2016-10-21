@@ -26,7 +26,7 @@ services:
 
   webpack:
     image: dmsnell/communityshare:5.0
-    command: /communityshare/start_webpack.sh
+    command: /communityshare/config/start_webpack.sh
     volumes:
       - .:/communityshare
     privileged: true
