@@ -17,32 +17,29 @@ Base = declarative_base()
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(level, location):
-    "Utility function for setting up logging."
-    if not os.path.exists(location):
-        os.makedirs(location)
-    logging_fn = os.path.join(location, 'community_share.log')
-    if not os.path.exists(logging_fn):
-        open(logging_fn, 'a').close()
-    ch = logging.FileHandler(logging_fn)
-    if location == "STDOUT":
-        ch = logging.StreamHandler(stream=sys.stdout)
-    ch.setLevel(level)
+def create_file_logger(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    return logging.FileHandler(path)
+
+
+def create_stdout_logger():
+    return logging.StreamHandler(stream=sys.stdout)
+
+
+def setup_logging(level, directory):
+
+    if directory == 'STDOUT':
+        handler = create_stdout_logger()
+    else:
+        handler = create_file_logger(os.path.join(directory, 'community_share.log'))
+
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    ch.setFormatter(formatter)
-    # Which packages do we want to log from.
-    packages = ('__main__', 'community_share')
-    for package in packages:
-        logger = logging.getLogger(package)
-        logger.addHandler(ch)
-        logger.setLevel(level)
-    # Warning only packages
-    packages = []
-    for package in packages:
-        logger = logging.getLogger(package)
-        logger.addHandler(ch)
-        logger.setLevel(logging.WARNING)
-    logger.debug('Finished setting up logging.')
+    handler.setFormatter(formatter)
+
+    for package in {'__main__', 'community_share'}:
+        module_logger = logging.getLogger(package)
+        module_logger.addHandler(handler)
+        module_logger.setLevel(level)
 
 
 class Store(object):
