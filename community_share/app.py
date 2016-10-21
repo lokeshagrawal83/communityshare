@@ -2,13 +2,13 @@ import logging
 
 from http import HTTPStatus
 
-from flask import Flask, send_from_directory, render_template
+from flask import Flask, send_from_directory, render_template, jsonify
 from flask_cors import CORS
 from flask.ext.compress import Compress
 from flask_webpack import Webpack
 
 from community_share import config, store, flask_sslify
-from community_share.app_exceptions import BadRequest
+from community_share.app_exceptions import BadRequest, Forbidden, Unauthorized, NotFound
 from community_share.routes.user_routes import register_user_routes
 from community_share.routes.search_routes import register_search_routes
 from community_share.routes.conversation_routes import register_conversation_routes
@@ -32,6 +32,15 @@ def ReverseProxied(app):
         return app(environ, start_response)
 
     return add_header
+
+
+def jsonify_with_code(code):
+    def jsonify_error(error):
+        response = jsonify({'message': str(error)})
+        response.status_code = code
+        return response
+
+    return jsonify_error
 
 
 def make_app():
@@ -74,6 +83,10 @@ def make_app():
     @app.errorhandler(BadRequest)
     def handle_bad_request(error):
         return str(error), HTTPStatus.BAD_REQUEST
+
+    app.errorhandler(Unauthorized)(jsonify_with_code(HTTPStatus.UNAUTHORIZED))
+    app.errorhandler(Forbidden)(jsonify_with_code(HTTPStatus.FORBIDDEN))
+    app.errorhandler(NotFound)(jsonify_with_code(HTTPStatus.NOT_FOUND))
 
     @app.route('/static/build/<path:filename>')
     def build_static(filename):
