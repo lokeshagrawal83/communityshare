@@ -1,6 +1,7 @@
 # Editors
 .idea
 .vscode
+.project
 
 # OSX properties
 .DS_Store
@@ -24,3 +25,4 @@ node_modules
 bower_components
 config.json
 .log
+.pydevproject

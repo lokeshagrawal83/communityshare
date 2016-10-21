@@ -23,6 +23,8 @@ services:
     volumes:
       - .:/communityshare
     privileged: true
+    environment:
+      - LOCAL_CODE_PATH=$PWD
 
   webpack:
     image: dmsnell/communityshare:5.0

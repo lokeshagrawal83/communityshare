@@ -5,6 +5,7 @@ import time
 
 from community_share import config, app
 import setup_test
+from debugger import can_connect_to_debugger, inject_debugger
 
 
 def wait_for_manifest(path):
@@ -24,6 +25,12 @@ def wait_for_manifest(path):
 
 logger = logging.getLogger(__name__)
 
+if can_connect_to_debugger():
+    print('Connecting to debugger')
+    inject_debugger()
+else:
+    print('Could not find any debugger')
+
 logger.info('Loading settings from environment')
 config.load_config('./config/config.dev.json')
 
@@ -38,4 +45,11 @@ logger.info('Making application')
 app = app.make_app()
 app.debug = True
 logger.info('Debug={0}'.format(app.debug))
-app.run(host='0.0.0.0', port=5000, extra_files=['./manifest.json'])
+app.run(
+    host='0.0.0.0',
+    port=5000,
+    debug=True,
+    use_debugger=(not can_connect_to_debugger()),  # use wsgi built-in?
+    use_reloader=(not can_connect_to_debugger()),  # reloads kill debugger
+    extra_files=['./manifest.json']
+)
