@@ -297,6 +297,21 @@ def make_random_user(password_hash):
     store.session.commit()
 
 
+def make_user(username, password):
+    password_hash = User.pwd_context.encrypt(password)
+
+    new_user = User(
+        name=username,
+        email=username,
+        password_hash=password_hash,
+        is_administrator=False,
+        email_confirmed=True,
+    )
+
+    store.session.add(new_user)
+    store.session.commit()
+
+
 def make_labels():
     all_labels = labels['GradeLevels'] + labels['SubjectAreas'] + labels['LevelOfEngagement']
     for name in all_labels:
@@ -380,6 +395,10 @@ def setup(n_random_users=100):
     logger.info('Making labels.')
     make_labels()
     from community_share.models.secret import Secret
+
+    logger.info('Making Non-Admin Users')
+    make_user('teacher@example.com', 'teacher')
+    make_user('partner@example.com', 'partner')
 
     logger.info('Making Admin Users')
     make_admin_user('admin@example.com', 'admin@example.com', 'admin')
