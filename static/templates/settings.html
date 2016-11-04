@@ -103,10 +103,13 @@
                       class="form-control"
                       ng-maxlength="1000"
             ></textarea>
-            <p>
+            <p ng-show="personalSettingsForm.bio.$valid">
 				{{ 1000 - user.bio.length }} characters remaining
 			</p>
-            <p ng-show="personalSettingsForm.bio.$invalid" class="help-block">
+			<p ng-show="personalSettingsForm.bio.$error.maxlength">
+				Maximum characters limit reached.
+			</p>
+            <p ng-show="personalSettingsForm.bio.$error.required" class="help-block">
               A brief description of yourself is required.
             </p>
           </div>
