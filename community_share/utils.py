@@ -1,9 +1,3 @@
-class StatusCodes(object):
-    FORBIDDEN = 403
-    NOT_FOUND = 404
-    SERVER_ERROR = 500
-
-
 def is_integer(s):
     try:
         f = float(s)

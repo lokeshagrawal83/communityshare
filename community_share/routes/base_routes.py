@@ -1,15 +1,12 @@
-import logging
 from http import HTTPStatus
-from functools import wraps
 
 from flask import jsonify, request, Blueprint
-
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from community_share import store
 from community_share.app_exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-from community_share.utils import StatusCodes, is_integer
 from community_share.authorization import get_requesting_user
+from community_share.utils import is_integer
 from community_share.models.base import ValidationException
 
 
@@ -23,14 +20,14 @@ def make_not_authorized_response():
 def make_forbidden_response():
     response_data = {'message': 'Forbidden'}
     response = jsonify(response_data)
-    response.status_code = StatusCodes.FORBIDDEN
+    response.status_code = HTTPStatus.FORBIDDEN
     return response
 
 
 def make_not_found_response():
     response_data = {'message': 'Not found'}
     response = jsonify(response_data)
-    response.status_code = StatusCodes.NOT_FOUND
+    response.status_code = HTTPStatus.NOT_FOUND
     return response
 
 
@@ -57,7 +54,7 @@ def make_server_error_response(message=None):
         message = 'Server error'
     response_data = {'message': message}
     response = jsonify(response_data)
-    response.status_code = StatusCodes.SERVER_ERROR
+    response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
     return response
 
 
