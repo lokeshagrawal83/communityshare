@@ -2,6 +2,7 @@
 .idea
 .vscode
 .project
+.lvimrc
 
 # OSX properties
 .DS_Store
