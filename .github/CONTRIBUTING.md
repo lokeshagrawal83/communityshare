@@ -1,25 +1,24 @@
-#
-Contributing to CommunityShare
+# Contributing to CommunityShare
 
 We'd love for you to help improve CommunityShare! Below are some guidelines for
 contributing.
 
-Psst: Come to our [meetup](Meetup) every other week! It's a great time to
+Psst: Come to our [meetup][Meetup] every other week! It's a great time to
 meet and plan with other CommunityShare contributors.
 
 ## Code of Conduct
-Please read and follow the Code For America [Code of Conduct](CFACOC).
+Please read and follow the Code For America [Code of Conduct][CFACOC].
 
 ## Questions?
 If you have questions about contributing to CommunityShare, please ask in the
-[#communityshare](slack) slack channel. If you aren't on slack, open a github
+[#communityshare][slack] slack channel. If you aren't on slack, open a github
 issue (and if you plan on sticking around, ask to be added to the slack
 channel).
 
 
 ## Creating an Issue
 Found a problem? Open an issue to let others know and to start collaborating on
-a fix! Before you do, search on [GitHub](issues) to check if there is already
+a fix! Before you do, search on [GitHub][issues] to check if there is already
 an issue open for the problem you found.
 
 Wondering what makes a good issue? Here is a good example:
@@ -41,7 +40,7 @@ write a helpful summary of your changes, and then submit it!
 
 Another way to make changes is to use `git` on your local computer. There
 are lots of resources online if you want to learn about git; here is
-[one](git). As in that guide, you'll want to create a new branch to do
+[one][git]. As in that guide, you'll want to create a new branch to do
 your development on:
 
 ```shell
@@ -75,7 +74,7 @@ messages they generate, but in general, try to fix everything they point out
 before accepting changes.
 
 ## Credits
-This style guide is a heavily modified derivative of AngularJS's [CONTRIBUTING.md](ngContributing)
+This style guide is a heavily modified derivative of AngularJS's [CONTRIBUTING.md][ngContributing]
 
 
 [ngContributing]:https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md

@@ -37,7 +37,7 @@ After this you should be able to see the servers initialize. You should be able 
 
 If you experience any issues getting CommunityShare running locally, please [file an issue](https://github.com/communityshare/communityshare/issues/new) and describe the problems you encountered.
 
-Want to know more or contribute? Check out our [Contribution Guidelines](contrib) and [Developer Guide](developer).
+Want to know more or contribute? Check out our [Contribution Guidelines][contrib] and [Developer Guide][developer].
 
 [developer]:https://github.com/communityshare/communityshare/blob/master/developer.md
 [contrib]:https://github.com/communityshare/communityshare/blob/master/.github/CONTRIBUTING.md
