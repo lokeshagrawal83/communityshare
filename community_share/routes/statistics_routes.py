@@ -1,12 +1,10 @@
 import logging
 import datetime
 
-from flask import jsonify
-
 from community_share.authorization import get_requesting_user
 from community_share import store, time_format
+from community_share.app_exceptions import Unauthorized, Forbidden
 from community_share.models.statistics import Statistic
-from community_share.routes import base_routes
 
 
 def get_new_user_statistics():
@@ -33,9 +31,9 @@ def register_statistics_routes(app):
     def statistics():
         requester = get_requesting_user()
         if requester is None:
-            response = base_routes.make_not_authorized_response()
+            raise Unauthorized()
         elif not requester.is_administrator:
-            response = base_routes.make_forbidden_response()
+            raise Forbidden()
         else:
             yesterday = Statistic.date_yesterday()
             response_data = {'data': {}}
@@ -43,5 +41,4 @@ def register_statistics_routes(app):
                 date = yesterday - datetime.timedelta(days=days_ago)
                 stats = Statistic.get_statistics(date)
                 response_data['data'][time_format.to_iso8601(date)] = stats
-            response = jsonify(response_data)
-        return response
+        return response_data
