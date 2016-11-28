@@ -1,8 +1,6 @@
 import logging
 import datetime
 
-from flask import jsonify
-
 from community_share.authorization import get_requesting_user
 from community_share import store, time_format
 from community_share.app_exceptions import Unauthorized, Forbidden
@@ -43,5 +41,4 @@ def register_statistics_routes(app):
                 date = yesterday - datetime.timedelta(days=days_ago)
                 stats = Statistic.get_statistics(date)
                 response_data['data'][time_format.to_iso8601(date)] = stats
-            response = jsonify(response_data)
-        return response
+        return response_data

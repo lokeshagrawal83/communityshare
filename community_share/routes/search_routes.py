@@ -1,5 +1,3 @@
-from flask import jsonify
-
 from community_share.models.search import Search, Label
 from community_share import search_utils, store
 from community_share.app_exceptions import BadRequest, NotFound, Unauthorized, Forbidden
@@ -17,9 +15,7 @@ def register_search_routes(app):
     def get_labels():
         labels = store.session.query(Label).filter(Label.active == True).all()
         labelnames = [label.name for label in labels]
-        response_data = {'data': labelnames}
-        response = jsonify(response_data)
-        return response
+        return {'data': labelnames}
 
     @app.route('/api/search/<id>/<page>/results', methods=['GET'])
     def get_search_results(id, page):
@@ -43,8 +39,7 @@ def register_search_routes(app):
                             exclude=[],
                         ) for search in matching_searches
                     ]
-                    response_data = {'data': serialized}
-                    response = jsonify(response_data)
+                    response = {'data': serialized}
                 else:
                     raise Forbidden()
         return response

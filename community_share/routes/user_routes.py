@@ -1,6 +1,6 @@
 import logging
 
-from flask import Response, request, jsonify, make_response
+from flask import Response, request, make_response
 
 from community_share.app_exceptions import FileTypeNotImplemented, FileTypeNotPermitted
 from community_share import mail_actions, store
@@ -62,7 +62,7 @@ def register_user_routes(app):
                         'apiKey': secret.key,
                         'warningMessage': warning_message,
                     }
-                response = jsonify(response_data)
+                response = response_data
             except ValidationException as e:
                 raise BadRequest(str(e))
         return response
@@ -83,10 +83,10 @@ def register_user_routes(app):
     @app.route('/api/requestapikey', methods=['GET'])
     @needs_auth()
     def request_api_key(requester: User) -> Response:
-        return jsonify({
+        return {
             'apiKey': requester.make_api_key().key,
             'user': serialize(requester, requester),
-        })
+        }
 
     @app.route('/api/resetpassword', methods=['POST'])
     def reset_password():
@@ -149,7 +149,7 @@ def register_user_routes(app):
                     'data': serialized,
                     'apiKey': secret.key,
                 }
-                response = jsonify(response_data)
+                response = response_data
         return response
 
     @app.route('/api/usersearch', methods=['GET'])

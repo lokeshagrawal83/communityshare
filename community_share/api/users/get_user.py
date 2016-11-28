@@ -1,6 +1,6 @@
 from typing import Optional
 
-from flask import jsonify, request, Response
+from flask import request, Response
 
 from community_share import Store, with_store
 from community_share.app_exceptions import NotFound
@@ -64,7 +64,7 @@ def endpoint(user_id: int, requester: User) -> Response:
     if user is None:
         raise NotFound()
 
-    return jsonify({
+    return {
         'user': {
             **user,
             'links': [{
@@ -72,7 +72,7 @@ def endpoint(user_id: int, requester: User) -> Response:
                 'href': request.url,
             }]
         }
-    })
+    }
 
 
 @with_store

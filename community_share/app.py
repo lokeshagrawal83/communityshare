@@ -2,7 +2,7 @@ import logging
 
 from http import HTTPStatus
 
-from flask import Flask, send_from_directory, render_template, jsonify
+from flask import Flask, send_from_directory, render_template, jsonify, Response
 from flask_cors import CORS
 from flask.ext.compress import Compress
 from flask_webpack import Webpack
@@ -43,6 +43,14 @@ def jsonify_with_code(code):
     return jsonify_error
 
 
+class JsonifyDictResponse(Response):
+    @classmethod
+    def force_type(cls, rv, environ=None):
+        if isinstance(rv, dict):
+            rv = jsonify(rv)
+        return super().force_type(rv, environ)
+
+
 def make_app():
     cors = CORS(origins=[
         'https://app.communityshare.us:443', # production app
@@ -53,6 +61,7 @@ def make_app():
     compress = Compress()
     webpack = Webpack()
     app = Flask(__name__, template_folder='../static/')
+    app.response_class = JsonifyDictResponse
 
     app.config['SQLALCHEMY_DATABASE_URI'] = config.DB_CONNECTION
     app.config['WEBPACK_ASSETS_URL'] = config.WEBPACK_ASSETS_URL

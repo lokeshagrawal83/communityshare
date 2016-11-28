@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Tuple
 
 from iso8601 import parse_date
 
-from flask import jsonify, request, Response
+from flask import request, Response
 
 from sqlalchemy import true, false
 
@@ -97,7 +97,7 @@ def endpoint(requester: User) -> Response:
 
     next_offset = offset if count <= offset + number else offset + number
 
-    return jsonify({
+    return {
         'count': count,
         'users': [
             {
@@ -130,7 +130,7 @@ def endpoint(requester: User) -> Response:
                 })
             }
         ]
-    })
+    }
 
 
 @with_store

@@ -1,6 +1,4 @@
-from http import HTTPStatus
-
-from flask import jsonify, request, Blueprint
+from flask import request, Blueprint
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from community_share import store
@@ -10,21 +8,14 @@ from community_share.utils import is_integer
 from community_share.models.base import ValidationException
 
 
-def make_OK_response(message=None):
-    if message is None:
-        message = 'OK'
-    response_data = {'message': message}
-    response = jsonify(response_data)
-    response.status_code = HTTPStatus.OK
-    return response
+def make_OK_response(message='OK'):
+    return {'message': message}
 
 
 def make_many_response(requester, items):
     serialized = [item.serialize(requester) for item in items]
     serialized = [s for s in serialized if s is not None]
-    response_data = {'data': serialized}
-    response = jsonify(response_data)
-    return response
+    return {'data': serialized}
 
 
 def make_single_response(requester, item, include_user=None):
@@ -43,8 +34,7 @@ def make_single_response(requester, item, include_user=None):
             if include_user is not None:
                 serialized_user = include_user.serialize(requester)
                 response_data['user'] = serialized_user
-            response = jsonify(response_data)
-    return response
+            return response_data
 
 
 def make_blueprint(Item, resource_name):
